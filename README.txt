@@ -3,7 +3,6 @@ The Gmu Music Player
 Version 0.9.1
 
 Copyright (c) 2006-2013 Johannes 'wej' Heimansberg
-Copyright (c) 2016 Nickolay 'NeoTheFox' Mardanov (CHIP port)
 http://wejp.k.vu/projects/gmu/
 
 Gmu is a music player for portable handheld consoles. It comes
@@ -81,13 +80,6 @@ Make sure you are using a recent kernel and rootfs. Older versions
 contain errors that might prevent Gmu from running.
 If you have been upgrading from an older Gmu version, you might need
 to remove the /root/.config/gmu directory before starting Gmu.
-
-==> Pocket C.H.I.P.
-
-Install .deb, and run "gmu".
-If you are building from source:
-TARGET=chip make
-./pack-chip.sh
 
 2.1 Supported file formats
 --------------------------

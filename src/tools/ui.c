@@ -20,7 +20,6 @@
 #endif
 #include <curses.h>
 #include <string.h>
-#include <wchar.h>
 #include "ui.h"
 #include "window.h"
 #include "listwidget.h"

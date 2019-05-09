@@ -13,7 +13,7 @@
 # the License. See the file COPYING in the Gmu's main directory
 # for details.
 #
-#Q?=@
+Q?=@
 STATIC?=0
 TARGET?=dingux
 include $(TARGET).mk
@@ -26,11 +26,11 @@ SYSROOT     := $(shell $(CC) --print-sysroot)
 SDL_CFLAGS  := $(shell $(SYSROOT)/usr/bin/sdl-config --cflags)
 SDL_LIBS    := $(shell $(SYSROOT)/usr/bin/sdl-config --libs)
 
-PREFIX?= 
-CFLAGS+=$(COPTS) -Wall -Wno-variadic-macros -Wuninitialized -Wcast-align -Wredundant-decls -Wmissing-declarations -DFILE_HW_H="\"hw_$(TARGET).h\"" -I/home/steward/Github/gh_retrogame_emulator/libmikmod-3.1.21.1/include -I. $(SDL_CFLAGS)
+PREFIX?=
+CFLAGS+=$(COPTS) -Wall -Wno-variadic-macros -Wuninitialized -Wcast-align -Wredundant-decls -Wmissing-declarations -DFILE_HW_H="\"hw_$(TARGET).h\"" -I/home/steward/Github/gh_retrogame_emulator/libmikmod-3.1.21.1/include
 
-LFLAGS_CORE=$(SDL_LIBS) -ldl -lrt
-LFLAGS_SDLFE=$(SDL_LIBS) -lSDL_image
+LFLAGS_CORE=$(SDL_LIB) -ldl -lrt
+LFLAGS_SDLFE=$(SDL_LIB) -lSDL_image
 ifneq ($(SDLFE_WITHOUT_SDL_GFX),1)
 LFLAGS_SDLFE+=-lSDL_gfx
 else
@@ -66,11 +66,11 @@ PLUGIN_FE_SDL_OBJECTFILES=sdl.o kam.o skin.o textrenderer.o question.o filebrows
 PLUGIN_FE_HTTP_OBJECTFILES=gmuhttp.o sha1.o base64.o httpd.o queue.o json.o websocket.o net.o
 
 # Decoder configs
-DEC_vorbis_LFLAGS=-lvorbisidec 
-#DEC_mpg123_LFLAGS=-lmpg123
+DEC_vorbis_LFLAGS=-lvorbisidec
+DEC_mpg123_LFLAGS=-lmpg123
 DEC_flac_LFLAGS=-lFLAC
 DEC_musepack_LFLAGS=-lmpcdec
-DEC_mikmod_LFLAGS=libmikmod.a
+DEC_mikmod_LFLAGS=/home/steward/Github/gh_retrogame_emulator/libmikmod-3.1.21.1/.libs/libmikmod.a
 DEC_speex_LFLAGS=-logg -lspeex
 
 ifeq (1,$(STATIC))
@@ -93,7 +93,7 @@ frontends: $(FRONTENDS_TO_BUILD)
 
 $(BINARY): $(OBJECTFILES) $(PLUGIN_OBJECTFILES)
 	@echo -e "Linking \033[1m$(BINARY)\033[0m"
-	$(Q)$(CC) $(OBJECTFILES) $(PLUGIN_OBJECTFILES) $(LFLAGS) $(LFLAGS_CORE) -o $(BINARY) -lpthread
+	$(Q)$(CC) $(OBJECTFILES) $(PLUGIN_OBJECTFILES) $(LFLAGS) $(LFLAGS_CORE) -o $(BINARY)
 
 libs.$(TARGET):
 	$(Q)-mkdir -p libs.$(TARGET)
@@ -178,7 +178,7 @@ gmu-cli: src/tools/gmu-cli.c wejpconfig.o
 
 gmuc: gmuc.o window.o listwidget.o websocket.o base64.o debug.o ringbuffer.o net.o json.o dir.o wejpconfig.o ui.o charset.o nethelper.o
 	@echo -e "Linking \033[1mgmuc\033[0m"
-	$(Q)$(CC) $(CFLAGS) $(LFLAGS) -o gmuc gmuc.o wejpconfig.o websocket.o base64.o debug.o ringbuffer.o net.o json.o window.o listwidget.o dir.o ui.o charset.o nethelper.o -lncurses_g
+	$(Q)$(CC) $(CFLAGS) $(LFLAGS) -o gmuc gmuc.o wejpconfig.o websocket.o base64.o debug.o ringbuffer.o net.o json.o window.o listwidget.o dir.o ui.o charset.o nethelper.o -lncursesw
 
 %.o: src/tools/%.c
 	@echo -e "Compiling \033[1m$<\033[0m"

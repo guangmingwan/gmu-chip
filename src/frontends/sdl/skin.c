@@ -23,6 +23,8 @@
 #include "gmuwidget.h"
 #include "debug.h"
 
+extern SDL_Surface *ScreenSurface;
+
 static int skin_init_widget(char *skin_name, ConfigFile *skinconf, char *prefix, GmuWidget *w)
 {
 	int   tmp_x1 = 0, tmp_y1 = 0, tmp_x2 = 0, tmp_y2 = 0;
@@ -315,7 +317,21 @@ static void skin_update_widget(Skin *skin, GmuWidget *gw, SDL_Surface *display, 
 	drect.x = srect.x;
 	drect.y = srect.y;
 	SDL_BlitSurface(buffer, &srect, display, &drect);
-	SDL_UpdateRects(display, 1, &drect);
+	//SDL_UpdateRects(display, 1, &drect);
+  //SDL_SoftStretch(display, NULL, ScreenSurface, NULL);
+
+  if(SDL_MUSTLOCK(ScreenSurface)) SDL_LockSurface(ScreenSurface);
+  int x, y;
+  uint32_t *s = (uint32_t*)display->pixels;
+  uint32_t *d = (uint32_t*)ScreenSurface->pixels;
+  for(y=0; y<240; y++){
+    for(x=0; x<160; x++){
+      *d++ = *s++;
+    }
+    d+= 160;
+  }
+  if(SDL_MUSTLOCK(ScreenSurface)) SDL_UnlockSurface(ScreenSurface);
+  SDL_Flip(ScreenSurface);
 }
 
 void skin_update_display(Skin *skin, SDL_Surface *display, SDL_Surface *buffer)
@@ -361,7 +377,21 @@ void skin_draw_footer_bg(Skin *skin, SDL_Surface *buffer)
 void skin_update_bg(Skin *skin, SDL_Surface *display, SDL_Surface *buffer)
 {
 	SDL_BlitSurface(buffer, NULL, display, NULL);
-	SDL_UpdateRect(display, 0, 0, 0, 0);
+	//SDL_UpdateRect(display, 0, 0, 0, 0);
+  //SDL_SoftStretch(display, NULL, ScreenSurface, NULL);
+
+  if(SDL_MUSTLOCK(ScreenSurface)) SDL_LockSurface(ScreenSurface);
+  int x, y;
+  uint32_t *s = (uint32_t*)display->pixels;
+  uint32_t *d = (uint32_t*)ScreenSurface->pixels;
+  for(y=0; y<240; y++){
+    for(x=0; x<160; x++){
+      *d++ = *s++;
+    }
+    d+= 160;
+  }
+  if(SDL_MUSTLOCK(ScreenSurface)) SDL_UnlockSurface(ScreenSurface);
+  SDL_Flip(ScreenSurface);
 }
 
 int skin_textarea_get_number_of_lines(Skin *skin)

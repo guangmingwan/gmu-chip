@@ -67,6 +67,7 @@ static PlaylistBrowser pb;
 static CoverViewer  cv;
 static Question     dlg;
 static SDL_TimerID  tid;
+SDL_Surface *ScreenSurface=NULL;
 
 typedef enum Update { UPDATE_NONE = 0, UPDATE_DISPLAY = 2, UPDATE_HEADER = 4,
                       UPDATE_FOOTER = 8, UPDATE_TEXTAREA = 16, UPDATE_ALL = 2+4+8+16 } Update;
@@ -115,6 +116,8 @@ static SDL_Surface *init_sdl(int with_joystick, int width, int height, int fulls
 	const SDL_VideoInfo *video_info;
 	int                  init_okay = 0;
 
+  	wdprintf(V_ERROR, "sdl_frontend", "SDL initSubSystem: %d .\n", with_joystick);
+
 	if (!SDL_WasInit(SDL_INIT_VIDEO)) {
 		if (SDL_InitSubSystem(SDL_INIT_VIDEO | (with_joystick ? SDL_INIT_JOYSTICK : 0)) < 0) {
 			wdprintf(V_ERROR, "sdl_frontend", "ERROR: Could not initialize SDL: %s\n", SDL_GetError());
@@ -130,7 +133,7 @@ static SDL_Surface *init_sdl(int with_joystick, int width, int height, int fulls
 		video_info = SDL_GetVideoInfo();
 		if (video_info) {
 			screen_max_width  = video_info->current_w;
-			screen_max_height = video_info->current_h;
+			screen_max_height = 240;//video_info->current_h; fixed for retrogame
 			screen_max_depth  = video_info->vfmt->BitsPerPixel;
 			wdprintf(V_INFO, "sdl_frontend", "Available screen real estate: %d x %d pixels @ %d bpp\n",
 					 screen_max_width, screen_max_height, screen_max_depth);
@@ -153,11 +156,14 @@ static SDL_Surface *init_sdl(int with_joystick, int width, int height, int fulls
 		}
 
 		gmu_load_icon();
-		display = SDL_SetVideoMode(width, height, screen_max_depth,
+		//display = SDL_SetVideoMode(width, height, screen_max_depth,
+		ScreenSurface = SDL_SetVideoMode(width, /*height*/480, screen_max_depth,
 #ifndef SDLFE_NO_HWACCEL
 								   SDL_HWSURFACE | SDL_HWACCEL |
 #endif
 								   SDL_RESIZABLE | fullscreen);
+    display = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 240, 16, 0, 0, 0, 0);
+    SDL_ShowCursor(0);
 		if (display == NULL) {
 			wdprintf(V_ERROR, "sdl_frontend", "ERROR: Could not initialize screen: %s\n", SDL_GetError());
 			exit(1);
@@ -928,7 +934,9 @@ static void run_player(char *skin_name, char *decoders_str)
 						update_display = 0;
 						/* Clear the whole screen: */
 						SDL_FillRect(display, NULL, 0);
-						SDL_UpdateRect(display, 0, 0, 0, 0);
+						//SDL_UpdateRect(display, 0, 0, 0, 0);
+						SDL_FillRect(ScreenSurface, NULL, 0);
+						SDL_UpdateRect(ScreenSurface, 0, 0, 0, 0);
 					} else {
 						/* Restore background: */
 						skin_update_bg(&skin, display, buffer);
@@ -1171,7 +1179,9 @@ static void run_player(char *skin_name, char *decoders_str)
 					hw_display_off();
 					/* Clear the whole screen: */
 					SDL_FillRect(display, NULL, 0);
-					SDL_UpdateRect(display, 0, 0, 0, 0);
+					//SDL_UpdateRect(display, 0, 0, 0, 0);
+				  SDL_FillRect(ScreenSurface, NULL, 0);
+					SDL_UpdateRect(ScreenSurface, 0, 0, 0, 0);
 					update_display = 0;
 					backlight_poweroff_timer = TIMER_ELAPSED;
 				}
