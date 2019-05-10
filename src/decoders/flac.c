@@ -19,6 +19,7 @@
 #include "../gmudecoder.h"
 #include "../trackinfo.h"
 #include "../util.h"
+
 #include "../charset.h"
 #include "FLAC/stream_decoder.h"
 #include "../debug.h"

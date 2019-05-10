@@ -16,20 +16,34 @@
 #Q?=@
 STATIC?=0
 TARGET?=dingux
+HAS_OSS?=1
 include $(TARGET).mk
 
 CROSS_COMPILE ?= mipsel-linux-
 CC          := $(CROSS_COMPILE)gcc
 STRIP       := $(CROSS_COMPILE)strip
 
+SYSROOT     := ""
+
+ifeq (unknown,$(TARGET))
+
+SDL_CFLAGS  := $(shell sdl-config --cflags)
+SDL_LIBS    := $(shell sdl-config --libs)
+
+else
 SYSROOT     := $(shell $(CC) --print-sysroot)
 SDL_CFLAGS  := $(shell $(SYSROOT)/usr/bin/sdl-config --cflags)
 SDL_LIBS    := $(shell $(SYSROOT)/usr/bin/sdl-config --libs)
+endif
 
 PREFIX?= 
 CFLAGS+=$(COPTS) -Wall -Wno-variadic-macros -Wuninitialized -Wcast-align -Wredundant-decls -Wmissing-declarations -DFILE_HW_H="\"hw_$(TARGET).h\"" -I/home/steward/Github/gh_retrogame_emulator/libmikmod-3.1.21.1/include -I. $(SDL_CFLAGS)
 
+ifeq (unknown,$(TARGET))
+LFLAGS_CORE=$(SDL_LIBS) -ldl -lm
+else
 LFLAGS_CORE=$(SDL_LIBS) -ldl -lrt
+endif
 LFLAGS_SDLFE=$(SDL_LIBS) -lSDL_image
 ifneq ($(SDLFE_WITHOUT_SDL_GFX),1)
 LFLAGS_SDLFE+=-lSDL_gfx
@@ -37,7 +51,12 @@ else
 CFLAGS+=-DSDLFE_WITHOUT_SDL_GFX=1
 endif
 
-OBJECTFILES=core.o ringbuffer.o util.o dir.o trackinfo.o playlist.o wejpconfig.o m3u.o pls.o audio.o charset.o fileplayer.o decloader.o feloader.o eventqueue.o oss_mixer.o debug.o reader.o hw_$(TARGET).o fmath.o id3.o
+OBJECTFILES=core.o ringbuffer.o util.o dir.o trackinfo.o playlist.o wejpconfig.o m3u.o pls.o audio.o charset.o fileplayer.o decloader.o feloader.o eventqueue.o debug.o reader.o hw_$(TARGET).o fmath.o id3.o
+
+ifeq (1,HAS_OSS)
+OBJECTFILES+= oss_mixer.o
+endif
+
 ALLFILES=src/ htdocs/ Makefile  *.sh *.dge *.gpu *.mk gmu.png themes README.txt BUILD.txt COPYING *.keymap gmuinput.*.conf gmu.*.conf gmu.bmp gmu.desktop PXML.xml
 BINARY=gmu.bin
 COMMON_DISTBIN_FILES=$(BINARY) frontends decoders themes gmu.png README.txt libs.$(TARGET) COPYING gmu.bmp gmu.desktop
@@ -62,16 +81,17 @@ LFLAGS+=$(LFLAGS_SDLFE)
 endif
 
 # Frontend configs
-PLUGIN_FE_SDL_OBJECTFILES=sdl.o kam.o skin.o textrenderer.o question.o filebrowser.o plbrowser.o about.o textbrowser.o coverimg.o coverviewer.o plmanager.o playerdisplay.o gmuwidget.o png.o jpeg.o bmp.o inputconfig.o help.o
+PLUGIN_FE_SDL_OBJECTFILES=sdl.o fmath.o dir.o eventqueue.o feloader.o fileplayer.o m3u.o reader.o pls.o playlist.o core.o hw_$(TARGET).o util.o ringbuffer.o audio.o wejpconfig.o charset.o decloader.o trackinfo.o debug.o kam.o skin.o textrenderer.o question.o filebrowser.o plbrowser.o about.o textbrowser.o coverimg.o coverviewer.o plmanager.o playerdisplay.o gmuwidget.o png.o jpeg.o bmp.o inputconfig.o help.o
 PLUGIN_FE_HTTP_OBJECTFILES=gmuhttp.o sha1.o base64.o httpd.o queue.o json.o websocket.o net.o
 
 # Decoder configs
-DEC_vorbis_LFLAGS=-lvorbisidec 
-#DEC_mpg123_LFLAGS=-lmpg123
-DEC_flac_LFLAGS=-lFLAC
+DEC_vorbis_LFLAGS=charset.o -lvorbisidec -lm 
+DEC_mpg123_LFLAGS=src/mikmod.c src/ringbuffer.c src/reader.c src/id3.c src/charset.c src/debug.c src/util.c src/trackinfo.c src/wejpconfig.c -lmpg123
+DEC_flac_LFLAGS=src/charset.c src/debug.c src/util.c src/trackinfo.c -lFLAC
+DEC_wavpack_LFLAGS=src/charset.c src/debug.c src/util.c src/trackinfo.c -lFLAC
 DEC_musepack_LFLAGS=-lmpcdec
-DEC_mikmod_LFLAGS=libmikmod.a
-DEC_speex_LFLAGS=-logg -lspeex
+DEC_mikmod_LFLAGS=src/charset.c src/debug.c src/util.c src/trackinfo.c -lmikmod
+DEC_speex_LFLAGS=src/charset.c src/debug.c src/util.c src/trackinfo.c -logg -lspeex
 
 ifeq (1,$(STATIC))
 LFLAGS+=$(foreach i, $(DECODERS_TO_BUILD), $(DEC_$(basename $(i))_LFLAGS))
@@ -81,10 +101,11 @@ TOOLS_TO_BUILD?=gmuc
 DISTBIN_DEPS?=default_distbin
 
 TEMP_HEADER_FILES=tmp-felist.h tmp-declist.h
-
-all: $(BINARY) decoders frontends $(TOOLS_TO_BUILD)
+all: desc $(BINARY) decoders frontends $(TOOLS_TO_BUILD)
 	@echo -e "All done for target \033[1m$(TARGET)\033[0m. \033[1m$(BINARY)\033[0m binary, \033[1mfrontends\033[0m and \033[1mdecoders\033[0m ready."
 
+desc:
+	@echo -e "building $(TARGET)"
 decoders: $(DECODERS_TO_BUILD)
 	@echo -e "All \033[1mdecoders\033[0m have been built."
 
@@ -188,9 +209,9 @@ decoders/%.so: src/decoders/%.c
 	@echo -e "Compiling \033[1m$<\033[0m"
 	$(Q)$(CC) $(CFLAGS) $(LFLAGS) $(PLUGIN_CFLAGS) $< -DGMU_REGISTER_DECODER=$(DECODER_PLUGIN_LOADER_FUNCTION) $(DEC_$(*)_LFLAGS)
 
-decoders/wavpack.so: src/decoders/wavpack.c util.o
+decoders/wavpack.so: src/decoders/wavpack.c
 	@echo -e "Compiling \033[1m$<\033[0m"
-	$(Q)$(CC) $(CFLAGS) $(LFLAGS) $(PLUGIN_CFLAGS) $< -DGMU_REGISTER_DECODER=$(DECODER_PLUGIN_LOADER_FUNCTION) util.o src/decoders/wavpack/*.c
+	$(Q)$(CC) $(CFLAGS) $(LFLAGS) $(PLUGIN_CFLAGS) $< -DGMU_REGISTER_DECODER=$(DECODER_PLUGIN_LOADER_FUNCTION) src/debug.c src/util.c src/decoders/wavpack/*.c
 
 %.o: src/decoders/%.c
 	@echo -e "Compiling \033[1m$<\033[0m"

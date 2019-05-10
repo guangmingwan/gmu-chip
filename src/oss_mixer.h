@@ -15,7 +15,7 @@
  */
 #ifndef _OSS_MIXER_H
 #define _OSS_MIXER_H
-#include <sys/soundcard.h>
+//#include <sys/soundcard.h>
 
 int  oss_mixer_open(void);
 void oss_mixer_close(void);

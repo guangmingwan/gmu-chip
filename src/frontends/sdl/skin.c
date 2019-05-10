@@ -97,8 +97,9 @@ static int skin_config_load(Skin *skin, char *skin_name)
 	skin->display_symbols = NULL;
 	skin->arrow_up = NULL;
 	skin->arrow_down = NULL;
-
+	wdprintf(V_INFO, "gmu", "base_dir:[%s]\n", gmu_core_get_base_dir());
 	snprintf(skin_file, 255, "%s/themes/%s/theme.conf", gmu_core_get_base_dir(), skin_name);
+	wdprintf(V_INFO, "gmu", "skin_file:[%s]\n", skin_file);
 	cfg_init_config_file_struct(&skinconf);
 	if (cfg_read_config_file(&skinconf, skin_file) != 0) {
 		wdprintf(V_ERROR, "skin", "Could not read skin config \"%s\".\n", skin_file);
@@ -244,7 +245,7 @@ int skin_init(Skin *skin, char *skin_name)
 {
 	int res = skin_config_load(skin, skin_name);
 	if (!res && strncmp(skin_name, "default", 7) != 0) {
-		wdprintf(V_INFO, "skin", "Trying to load default skin...\n");
+		wdprintf(V_INFO, "skin", "Trying to load default skin %s...\n",skin_name);
 		if (res) skin_free(skin);
 		res = skin_init(skin, "default");
 	}

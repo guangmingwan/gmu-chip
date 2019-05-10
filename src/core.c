@@ -650,6 +650,10 @@ int gmu_core_get_shutdown_time_total(void)
 
 char *gmu_core_get_base_dir(void)
 {
+	if (!getcwd(base_dir, 255)) snprintf(base_dir, 255, ".");
+	if(strlen(base_dir)<=0) {
+		snprintf(base_dir, 255, ".");
+	}
 	return base_dir;
 }
 
@@ -795,7 +799,8 @@ int main(int argc, char **argv)
 	signal(SIGINT, sig_handler);
 	signal(SIGTERM, sig_handler);
 
-	if (!getcwd(base_dir, 255)) snprintf(base_dir, 255, ".");
+	gmu_core_get_base_dir();
+	wdprintf(V_ERROR, "gmu", "base_dir: [%s]\n", base_dir);
 	sys_config_dir = base_dir;
 	config_dir = base_dir;
 

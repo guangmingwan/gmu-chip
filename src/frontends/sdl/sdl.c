@@ -116,7 +116,7 @@ static SDL_Surface *init_sdl(int with_joystick, int width, int height, int fulls
 	const SDL_VideoInfo *video_info;
 	int                  init_okay = 0;
 
-  	wdprintf(V_ERROR, "sdl_frontend", "SDL initSubSystem: %d .\n", with_joystick);
+  	wdprintf(V_ERROR, "sdl_frontend", "SDL initSubSystem: %d,%d,%d,%d .\n", with_joystick,fullscreen,width,height);
 
 	if (!SDL_WasInit(SDL_INIT_VIDEO)) {
 		if (SDL_InitSubSystem(SDL_INIT_VIDEO | (with_joystick ? SDL_INIT_JOYSTICK : 0)) < 0) {
@@ -132,7 +132,7 @@ static SDL_Surface *init_sdl(int with_joystick, int width, int height, int fulls
 	if (init_okay) {
 		video_info = SDL_GetVideoInfo();
 		if (video_info) {
-			screen_max_width  = video_info->current_w;
+			screen_max_width  = 320;//video_info->current_w;
 			screen_max_height = 240;//video_info->current_h; fixed for retrogame
 			screen_max_depth  = video_info->vfmt->BitsPerPixel;
 			wdprintf(V_INFO, "sdl_frontend", "Available screen real estate: %d x %d pixels @ %d bpp\n",
@@ -1305,7 +1305,7 @@ static void run_player(char *skin_name, char *decoders_str)
 static void *start_player(void *arg)
 {
 	int             start = 1, setup = 0;
-	char            skin_name[128] = "";
+	char            skin_name[128] = "default-modern";
 
 	if (!getcwd(base_dir, 255)) start = 0;
 
