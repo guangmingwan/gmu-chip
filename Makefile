@@ -86,7 +86,7 @@ PLUGIN_FE_HTTP_OBJECTFILES=gmuhttp.o sha1.o base64.o httpd.o queue.o json.o webs
 
 # Decoder configs
 DEC_vorbis_LFLAGS=charset.o -lvorbisidec -lm 
-DEC_mpg123_LFLAGS=src/mikmod.c src/ringbuffer.c src/reader.c src/id3.c src/charset.c src/debug.c src/util.c src/trackinfo.c src/wejpconfig.c -lmpg123
+DEC_mpg123_LFLAGS=src/ringbuffer.c src/reader.c src/id3.c src/charset.c src/debug.c src/util.c src/trackinfo.c src/wejpconfig.c -lmpg123
 DEC_flac_LFLAGS=src/charset.c src/debug.c src/util.c src/trackinfo.c -lFLAC
 DEC_wavpack_LFLAGS=src/charset.c src/debug.c src/util.c src/trackinfo.c -lFLAC
 DEC_musepack_LFLAGS=-lmpcdec
