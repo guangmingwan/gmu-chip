@@ -696,6 +696,9 @@ wdprintf(V_DEBUG, "run_player", "%s ,%s\n", skin_name, decoders_str);
 		char tmp[256], *keymap_file;
 		key_action_mapping_init(kam);
 		keymap_file = cfg_get_key_value(*config, "KeyMap");
+		if(keymap_file == NULL ) {
+			keymap_file = "unknown.keymap";
+		}
 		wdprintf(V_DEBUG, "sdl_frontend", "keymap_file :%s\n", keymap_file);
 		if (keymap_file) {
 			snprintf(tmp, 255, "%s/%s", gmu_core_get_config_dir(), keymap_file);
