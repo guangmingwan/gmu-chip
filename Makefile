@@ -39,17 +39,16 @@ endif
 PREFIX?= 
 CFLAGS+=$(COPTS) -Wall -Wno-variadic-macros -Wuninitialized -Wcast-align -Wredundant-decls -Wmissing-declarations -DFILE_HW_H="\"hw_$(TARGET).h\"" -I/home/steward/Github/gh_retrogame_emulator/libmikmod-3.1.21.1/include -I. $(SDL_CFLAGS)
 
-UNAME_S := $(shell uname -s)
-
-ifeq ($(UNAME_S),Linux)
+ifeq (unknown,$(TARGET))
+LFLAGS_CORE=$(SDL_LIBS) -ldl -lrt
+else
 LFLAGS_CORE=$(SDL_LIBS) -ldl -lrt
 endif
-ifeq ($(UNAME_S),Darwin)
-LFLAGS_CORE=$(SDL_LIBS) -ldl
-endif
 LFLAGS_SDLFE=$(SDL_LIBS) -lSDL_image
+
+SDLFE_WITHOUT_SDL_GFX?=0
 ifneq ($(SDLFE_WITHOUT_SDL_GFX),1)
-LFLAGS_SDLFE += -lSDL_gfx
+LFLAGS_SDLFE+=-lSDL_gfx
 else
 CFLAGS+=-DSDLFE_WITHOUT_SDL_GFX=1
 endif
@@ -69,12 +68,7 @@ ifeq (0,$(STATIC))
 FRONTEND_PLUGIN_LOADER_FUNCTION=gmu_register_frontend
 DECODER_PLUGIN_LOADER_FUNCTION=gmu_register_decoder
 CFLAGS+=-DSTATIC=0
-ifeq ($(UNAME_S),Darwin)  
-PLUGIN_CFLAGS=-dynamiclib -o $@ -fpic $(COPTS)
-endif
-ifeq ($(UNAME_S),Linux)
 PLUGIN_CFLAGS=-shared -o $@ -fpic $(COPTS)
-endif
 GENERATED_HEADERFILES_STATIC=
 PLUGIN_OBJECTFILES=
 else
@@ -89,7 +83,7 @@ LFLAGS+=$(LFLAGS_SDLFE)
 endif
 
 # Frontend configs
-PLUGIN_FE_SDL_OBJECTFILES=sdl.o core.o fmath.o dir.o eventqueue.o feloader.o fileplayer.o m3u.o reader.o pls.o playlist.o hw_$(TARGET).o util.o ringbuffer.o audio.o wejpconfig.o charset.o decloader.o trackinfo.o debug.o kam.o skin.o textrenderer.o question.o filebrowser.o plbrowser.o about.o textbrowser.o coverimg.o coverviewer.o plmanager.o playerdisplay.o gmuwidget.o png.o jpeg.o bmp.o inputconfig.o help.o
+PLUGIN_FE_SDL_OBJECTFILES=sdl.o core.o fmath.o dir.o eventqueue.o feloader.o fileplayer.o m3u.o reader.o pls.o playlist.o hw_$(TARGET).o util.o ringbuffer.o audio.o wejpconfig.o charset.o decloader.o trackinfo.o debug.o kam.o skin.o textrenderer.o question.o filebrowser.o plbrowser.o about.o textbrowser.o coverimg.o coverviewer.o plmanager.o playerdisplay.o gmuwidget.o png.o jpeg.o bmp.o inputconfig.o help.o -lSDL_image
 PLUGIN_FE_HTTP_OBJECTFILES=gmuhttp.o sha1.o base64.o httpd.o queue.o json.o websocket.o net.o
 
 # Decoder configs
@@ -229,7 +223,7 @@ decoders/wavpack.so: src/decoders/wavpack.c
 	@echo -e "Compiling \033[1m$<\033[0m"
 	$(Q)$(CC) -fPIC $(CFLAGS) -DGMU_REGISTER_DECODER=$(DECODER_PLUGIN_LOADER_FUNCTION) -Isrc/ -c -o $@ $<
 
-frontends/sdl.so: $(PLUGIN_FE_SDL_OBJECTFILES)
+frontends/sdl.so:  $(PLUGIN_FE_SDL_OBJECTFILES) 
 	@echo -e "Linking \033[1m$@\033[0m"
 	$(Q)$(CC) $(CFLAGS) $(LFLAGS) $(LFLAGS_SDLFE) -Isrc/ $(PLUGIN_CFLAGS) $(PLUGIN_FE_SDL_OBJECTFILES)
 
@@ -239,7 +233,7 @@ frontends/fltkfe.so: src/frontends/fltk/fltkfe.cxx
 
 frontends/log.so: src/frontends/log.c
 	@echo -e "Compiling \033[1m$<\033[0m"
-	$(Q)$(CC) $(CFLAGS) $(PLUGIN_CFLAGS) $(LFLAGS_SDLFE) $< -DGMU_REGISTER_FRONTEND=$(FRONTEND_PLUGIN_LOADER_FUNCTION)  $(OBJECTFILES) -lpthread
+	$(Q)$(CC) $(CFLAGS) $(PLUGIN_CFLAGS) $< -DGMU_REGISTER_FRONTEND=$(FRONTEND_PLUGIN_LOADER_FUNCTION) $(OBJECTFILES) -lpthread
 
 frontends/lirc.so: src/frontends/lirc.c
 	@echo -e "Compiling \033[1m$<\033[0m"
