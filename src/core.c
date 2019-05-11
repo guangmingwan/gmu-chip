@@ -54,7 +54,7 @@ static int           volume_max;
 static unsigned int  player_status = STOPPED;
 static int           shutdown_timer = 0;
 static int           remaining_time;
-static char          base_dir[256], *config_dir;
+static char          base_dir[256], *config_dir = ".";
 
 
 static void init_sdl(void)
@@ -686,7 +686,7 @@ static int init_user_config_dir(char *user_config_dir, char *sys_config_dir, cha
 {
 	int   result = 0;
 	char *home = getenv("HOME");
-
+	wdprintf(V_DEBUG, "gmu", "User home directory: %s\n", home);
 	if (home) {
 		char       target[384], source[384], *filename = NULL;
 		ConfigFile cf;
@@ -726,7 +726,12 @@ static int init_user_config_dir(char *user_config_dir, char *sys_config_dir, cha
 			}
 			file = cfg_get_key_value(cf, "InputConfigFile");
 			if (result) {
-				if (!file) file = "gmuinput.conf";
+				const char* code = hw_get_device_model_code();
+				if (!file) {
+					char inputFile[256];
+					snprintf(inputFile,256, "gmuinput.%s.conf", hw_get_device_model_code());
+					file =inputFile;
+				}
 				snprintf(target, 383, "%s/%s", user_config_dir, file);
 				if (!file_exists(target)) {
 					wdprintf(V_INFO, "gmu", "Copying file: %s\n", file);
@@ -779,7 +784,8 @@ int main(int argc, char **argv)
 {
 	char        *skin_file = "";
 	char         user_config_dir[256] = "0";
-	char        *config_file = "gmu.conf", *config_file_path, *sys_config_dir = NULL;
+	char 		 config_file[512];
+	char        *default_config_file = "gmu.%s.conf", *config_file_path, *sys_config_dir = NULL;
 	char         temp[512];
 	int          disksync = 0;
 	int          i;
@@ -787,6 +793,9 @@ int main(int argc, char **argv)
 	int          auto_shutdown = 0;
 	time_t       start, end;
 	Verbosity    v = V_INFO;
+
+	const char*  device_code = hw_get_device_model_code();
+	snprintf(config_file, 512, default_config_file, device_code);
 	char        *frontend_plugin_by_cmd_arg[MAX_FRONTEND_PLUGIN_BY_CMD_ARG];
 	int          frontend_plugin_by_cmd_arg_counter = 0;
 	int          pb_time = -1;
@@ -836,7 +845,7 @@ int main(int argc, char **argv)
 					break;
 				case 'c': /* Config file */
 					if (argc >= i+2) {
-						config_file = argv[i+1];
+						strcpy( argv[i+1], config_file);
 						i++;
 					} else {
 						wdprintf(V_ERROR, "gmu", "Invalid usage of -c: Config file required.\n");

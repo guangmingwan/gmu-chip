@@ -19,7 +19,7 @@ TARGET?=dingux
 HAS_OSS?=1
 include $(TARGET).mk
 
-CROSS_COMPILE ?= mipsel-linux-
+#CROSS_COMPILE ?= mipsel-linux-
 CC          := $(CROSS_COMPILE)gcc
 STRIP       := $(CROSS_COMPILE)strip
 
@@ -40,7 +40,7 @@ PREFIX?=
 CFLAGS+=$(COPTS) -Wall -Wno-variadic-macros -Wuninitialized -Wcast-align -Wredundant-decls -Wmissing-declarations -DFILE_HW_H="\"hw_$(TARGET).h\"" -I/home/steward/Github/gh_retrogame_emulator/libmikmod-3.1.21.1/include -I. $(SDL_CFLAGS)
 
 ifeq (unknown,$(TARGET))
-LFLAGS_CORE=$(SDL_LIBS) -ldl -lm
+LFLAGS_CORE=$(SDL_LIBS) -ldl -lrt
 else
 LFLAGS_CORE=$(SDL_LIBS) -ldl -lrt
 endif
@@ -81,7 +81,7 @@ LFLAGS+=$(LFLAGS_SDLFE)
 endif
 
 # Frontend configs
-PLUGIN_FE_SDL_OBJECTFILES=sdl.o fmath.o dir.o eventqueue.o feloader.o fileplayer.o m3u.o reader.o pls.o playlist.o core.o hw_$(TARGET).o util.o ringbuffer.o audio.o wejpconfig.o charset.o decloader.o trackinfo.o debug.o kam.o skin.o textrenderer.o question.o filebrowser.o plbrowser.o about.o textbrowser.o coverimg.o coverviewer.o plmanager.o playerdisplay.o gmuwidget.o png.o jpeg.o bmp.o inputconfig.o help.o -lSDL_image
+PLUGIN_FE_SDL_OBJECTFILES=sdl.o core.o fmath.o dir.o eventqueue.o feloader.o fileplayer.o m3u.o reader.o pls.o playlist.o hw_$(TARGET).o util.o ringbuffer.o audio.o wejpconfig.o charset.o decloader.o trackinfo.o debug.o kam.o skin.o textrenderer.o question.o filebrowser.o plbrowser.o about.o textbrowser.o coverimg.o coverviewer.o plmanager.o playerdisplay.o gmuwidget.o png.o jpeg.o bmp.o inputconfig.o help.o -lSDL_gfx -lSDL_image
 PLUGIN_FE_HTTP_OBJECTFILES=gmuhttp.o sha1.o base64.o httpd.o queue.o json.o websocket.o net.o
 
 # Decoder configs
@@ -105,11 +105,15 @@ all: desc $(BINARY) decoders frontends $(TOOLS_TO_BUILD)
 	@echo -e "All done for target \033[1m$(TARGET)\033[0m. \033[1m$(BINARY)\033[0m binary, \033[1mfrontends\033[0m and \033[1mdecoders\033[0m ready."
 
 desc:
+	mkdir -p decoders
+	mkdir -p frontends
 	@echo -e "building $(TARGET)"
 decoders: $(DECODERS_TO_BUILD)
+	
 	@echo -e "All \033[1mdecoders\033[0m have been built."
 
 frontends: $(FRONTENDS_TO_BUILD)
+	
 	@echo -e "All \033[1mfrontends\033[0m have been built."
 
 $(BINARY): $(OBJECTFILES) $(PLUGIN_OBJECTFILES)
@@ -225,9 +229,9 @@ frontends/fltkfe.so: src/frontends/fltk/fltkfe.cxx
 	@echo -e "Compiling \033[1m$<\033[0m"
 	$(Q)$(CXX) -Wall -pedantic $(PLUGIN_CFLAGS) -O2 $< -L/usr/lib/fltk/ -lfltk2 -lXext -lXinerama -lXft -lX11 -lXi -lm
 
-frontends/log.so: src/frontends/log.c util.o
+frontends/log.so: src/frontends/log.c
 	@echo -e "Compiling \033[1m$<\033[0m"
-	$(Q)$(CC) $(CFLAGS) $(PLUGIN_CFLAGS) $< -DGMU_REGISTER_FRONTEND=$(FRONTEND_PLUGIN_LOADER_FUNCTION) util.o -lpthread
+	$(Q)$(CC) $(CFLAGS) $(PLUGIN_CFLAGS) $< -DGMU_REGISTER_FRONTEND=$(FRONTEND_PLUGIN_LOADER_FUNCTION)  $(OBJECTFILES) -lpthread
 
 frontends/lirc.so: src/frontends/lirc.c
 	@echo -e "Compiling \033[1m$<\033[0m"

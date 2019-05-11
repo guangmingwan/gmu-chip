@@ -48,3 +48,8 @@ const char *hw_get_device_model_name(void)
 {
 	return "Unknown device";
 }
+
+const char *hw_get_device_model_code(void)
+{
+	return "unknown";
+}

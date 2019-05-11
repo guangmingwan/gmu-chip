@@ -17,7 +17,7 @@
 ifeq (0,$(STATIC))
 # normal build
 DECODERS_TO_BUILD?=decoders/vorbis.so decoders/flac.so decoders/wavpack.so decoders/mpg123.so decoders/mikmod.so decoders/speex.so
-FRONTENDS_TO_BUILD?=frontends/sdl.so
+FRONTENDS_TO_BUILD?=frontends/sdl.so frontends/log.so
 else
 # static build
 DECODERS_TO_BUILD=vorbis.o flac.o mpg123.o mikmod.o speex.o
@@ -36,5 +36,5 @@ MIKMOD_CFLAGS=$(shell libmikmod-config --cflags)
 
 COPTS?=-O0 -fno-short-enums -g
 CFLAGS=-I/usr/local/include -I/opt/local/include $(SDL_CFLAGS) -fsigned-char -D_REENTRANT -DUSE_MEMORY_H -std=c99
-LFLAGS=-L/usr/local/lib -L/opt/local/lib/
+LFLAGS=-L/usr/local/lib -L/opt/local/lib/ -Wl,-export-dynamic
 DISTFILES=$(COMMON_DISTBIN_FILES) gmuinput.unknown.conf gmu.sh
