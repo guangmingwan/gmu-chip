@@ -285,6 +285,35 @@ int charset_is_valid_utf8_string(const char *str)
 	return valid;
 }
 
+int charset_gbk_to_codepoints(UCodePoint *target, const char *source, int target_size)
+{
+	int            i, j, len = strlen(source), valid = 1;
+	unsigned char *src = (unsigned char *)source;
+
+	for (i = 0, j = 0; j < target_size && source[i]; i++) {
+		if (src[i] < 128) { /* ASCII char */
+			target[j] = src[i];
+		} else if (src[i] >= 161 && src[i] <= 274) { /* 2 byte char */
+			if (i+1 >= len || src[i+1] < 128) {
+				valid = 0;
+			} else {
+				target[j] = (src[i] << 8) +src[i+1];
+				i += 1;
+			}
+		} 
+		else {
+			valid = 0;
+		}
+		if (!valid) {
+			/*wdprintf(V_DEBUG, "charset", "utf-8: Invalid UTF-8 string!\n");*/
+			break;
+		}
+		j++;
+	}
+	for (i = j; i < target_size; i++) target[i] = 0;
+	return valid;
+}
+
 int charset_utf8_to_codepoints(UCodePoint *target, const char *source, int target_size)
 {
 	int            i, j, len = strlen(source), valid = 1;
@@ -327,7 +356,28 @@ int charset_utf8_to_codepoints(UCodePoint *target, const char *source, int targe
 	for (i = j; i < target_size; i++) target[i] = 0;
 	return valid;
 }
-
+int charset_gbk_len(const char *str) {
+	int gbklen = 0;
+	int            i, len = strlen(str), valid = 1;
+	unsigned char *src = (unsigned char *)str;
+	for (i = 0; i < len; i++) {
+		if (src[i] < 128) { /* ASCII char */
+			gbklen++;
+		} else if (src[i] >= 161 && src[i] < 247) { /* 2 byte char */
+			if (i+1 >= len || src[i+1] < 128) valid = 0;
+			i += 1;
+			gbklen++;
+		}else {
+			valid = 0;
+		}
+		if (!valid) {
+			gbklen = 0;
+			/*wdprintf(V_DEBUG, "charset", "utf-8: Invalid UTF-8 string!\n");*/
+			break;
+		}
+	}
+	return gbklen;
+}
 int charset_utf8_len(const char *str)
 {
 	int u8len = 0;

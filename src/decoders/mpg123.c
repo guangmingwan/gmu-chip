@@ -222,7 +222,7 @@ static int mpg123_play_file(char *mpeg_file)
 			size_t        dummy;
 			unsigned char dumbuf[1024];
 
-			wdprintf(V_INFO, "mpg123", "Found stream with %d channels and %ld bps.\n", channels, rate);
+			wdprintf(V_INFO, "mpg123", "Found stream with %d channels and %ld 比特率.\n", channels, rate);
 			mpg123_format_none(player);
 			mpg123_format(player, rate, channels, encoding);
 			mpg123_info(player, &mi);

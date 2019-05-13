@@ -193,14 +193,14 @@ void player_display_draw(TextRenderer *tr, TrackInfo *ti, PB_Status player_statu
 		}
 	}
 	if (skin.bitrate_offset_x >= 0 && skin.bitrate_offset_y >= 0) {
-		snprintf(buf, 27, "%4d KBPS", (int)(ti->recent_bitrate / 1000));
+		snprintf(buf, 27, "%4d 比特率", (int)(ti->recent_bitrate / 1000));
 		textrenderer_draw_string(&skin.font_display, buf, buffer,
 		                         skin.bitrate_offset_x, skin.bitrate_offset_y);
 	}
 	if (skin.frequency_offset_x >= 0 && skin.frequency_offset_y >= 0) {
 		char tmp6[6];
 		snprintf(tmp6, 6, "%05d", ti->samplerate);
-		snprintf(buf, 27, "%c%c.%c KHZ", tmp6[0] != '0' ? tmp6[0] : ' ', tmp6[1], tmp6[2]);
+		snprintf(buf, 27, "%c%c.%c K 采样率", tmp6[0] != '0' ? tmp6[0] : ' ', tmp6[1], tmp6[2]);
 		textrenderer_draw_string(&skin.font_display, buf, buffer,
 		                         skin.frequency_offset_x, skin.frequency_offset_y);
 	}
