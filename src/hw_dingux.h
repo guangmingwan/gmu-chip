@@ -38,4 +38,5 @@ void        hw_display_off(void);
 void        hw_display_on(void);
 void        hw_detect_device_model(void);
 const char *hw_get_device_model_name(void);
+const char *hw_get_device_model_code(void);
 #endif
