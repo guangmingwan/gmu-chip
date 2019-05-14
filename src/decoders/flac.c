@@ -19,6 +19,7 @@
 #include "../gmudecoder.h"
 #include "../trackinfo.h"
 #include "../util.h"
+
 #include "../charset.h"
 #include "FLAC/stream_decoder.h"
 #include "../debug.h"
@@ -90,7 +91,7 @@ static void metadata_callback(const FLAC__StreamDecoder  *decoder,
 			ti->recent_bitrate = ti->bitrate;
 			ti->length         = metadata->data.stream_info.total_samples / ti->samplerate;
 			ti->vbr            = 1;
-			wdprintf(V_DEBUG, "flac", "Bitstream is %d channel, %ld kbps, %d Hz\n",
+			wdprintf(V_DEBUG, "flac", "Bitstream is %d channel, %ld k波特率, %d Hz\n",
 			         ti->channels, ti->bitrate / 1000, ti->samplerate);
 			break;
 		case FLAC__METADATA_TYPE_VORBIS_COMMENT:

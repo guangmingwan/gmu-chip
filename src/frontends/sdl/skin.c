@@ -23,6 +23,8 @@
 #include "gmuwidget.h"
 #include "debug.h"
 
+extern SDL_Surface *ScreenSurface;
+const char* code = NULL;
 static int skin_init_widget(char *skin_name, ConfigFile *skinconf, char *prefix, GmuWidget *w)
 {
 	int   tmp_x1 = 0, tmp_y1 = 0, tmp_x2 = 0, tmp_y2 = 0;
@@ -95,8 +97,9 @@ static int skin_config_load(Skin *skin, char *skin_name)
 	skin->display_symbols = NULL;
 	skin->arrow_up = NULL;
 	skin->arrow_down = NULL;
-
+	wdprintf(V_INFO, "gmu", "base_dir:[%s]\n", gmu_core_get_base_dir());
 	snprintf(skin_file, 255, "%s/themes/%s/theme.conf", gmu_core_get_base_dir(), skin_name);
+	wdprintf(V_INFO, "gmu", "skin_file:[%s]\n", skin_file);
 	cfg_init_config_file_struct(&skinconf);
 	if (cfg_read_config_file(&skinconf, skin_file) != 0) {
 		wdprintf(V_ERROR, "skin", "Could not read skin config \"%s\".\n", skin_file);
@@ -208,19 +211,22 @@ static int skin_config_load(Skin *skin, char *skin_name)
 				{
 					int  a, b, c;
 					char tmp[256];
-					
+					char hzk_filename[256];
 					wdprintf(V_DEBUG, "skin", "Loading fonts...\n");
 					snprintf(tmp, 255, "%s/themes/%s/%s", gmu_core_get_base_dir(), skin->name, skin->font_display_name);
+
+					snprintf(hzk_filename, 255, "%s/themes/%s/%s", gmu_core_get_base_dir(), skin->name,"HZK12");
+
 					wdprintf(V_DEBUG, "skin", "Loading %s\n", tmp);
-					a = textrenderer_init(&skin->font_display, tmp, 
+					a = textrenderer_init(&skin->font_display, tmp, hzk_filename,
 					                      skin->font_display_char_width, skin->font_display_char_height);
 					snprintf(tmp, 255, "%s/themes/%s/%s", gmu_core_get_base_dir(), skin->name, skin->font1_name);
 					wdprintf(V_DEBUG, "skin", "Loading %s\n", tmp);
-					b = textrenderer_init(&skin->font1, tmp, 
+					b = textrenderer_init(&skin->font1, tmp, NULL,
 								          skin->font1_char_width, skin->font1_char_height);
 					snprintf(tmp, 255, "%s/themes/%s/%s", gmu_core_get_base_dir(), skin->name, skin->font2_name);
 					wdprintf(V_DEBUG, "skin", "Loading %s\n", tmp);
-					c = textrenderer_init(&skin->font2, tmp,
+					c = textrenderer_init(&skin->font2, tmp,NULL,
 					                      skin->font2_char_width, skin->font2_char_height);
 					if (a && b && c)
 						wdprintf(V_INFO, "skin", "skin: Skin data loaded successfully.\n");
@@ -240,12 +246,14 @@ static int skin_config_load(Skin *skin, char *skin_name)
 
 int skin_init(Skin *skin, char *skin_name)
 {
+	code= hw_get_device_model_code();
 	int res = skin_config_load(skin, skin_name);
 	if (!res && strncmp(skin_name, "default", 7) != 0) {
-		wdprintf(V_INFO, "skin", "Trying to load default skin...\n");
+		wdprintf(V_INFO, "skin", "Trying to load default skin %s...\n",skin_name);
 		if (res) skin_free(skin);
 		res = skin_init(skin, "default");
 	}
+	wdprintf(V_INFO, "skin", "skin_init done.\n");
 	return res;
 }
 
@@ -268,6 +276,7 @@ void skin_free(Skin *skin)
 static int skin_init_offscreen(Skin *skin, SDL_Surface *target)
 {
 	int initialized = 0;
+
 
 	if (!skin->buffer) { /* new surface */
 		SDL_Surface *tmp = SDL_CreateRGBSurface(SDL_SWSURFACE, target->w, target->h, HW_COLOR_DEPTH, 0, 0, 0, 0);
@@ -315,7 +324,24 @@ static void skin_update_widget(Skin *skin, GmuWidget *gw, SDL_Surface *display, 
 	drect.x = srect.x;
 	drect.y = srect.y;
 	SDL_BlitSurface(buffer, &srect, display, &drect);
-	SDL_UpdateRects(display, 1, &drect);
+	if(strstr(code, "unknown")) {
+		SDL_UpdateRects(display, 1, &drect);
+		SDL_SoftStretch(display, NULL, ScreenSurface, NULL);
+	}
+	else {
+		if(SDL_MUSTLOCK(ScreenSurface)) SDL_LockSurface(ScreenSurface);
+		int x, y;
+		uint32_t *s = (uint32_t*)display->pixels;
+		uint32_t *d = (uint32_t*)ScreenSurface->pixels;
+		for(y=0; y<240; y++){
+			for(x=0; x<160; x++){
+			*d++ = *s++;
+			}
+			d+= 160;
+		}
+		if(SDL_MUSTLOCK(ScreenSurface)) SDL_UnlockSurface(ScreenSurface);
+		SDL_Flip(ScreenSurface);
+	}
 }
 
 void skin_update_display(Skin *skin, SDL_Surface *display, SDL_Surface *buffer)
@@ -361,7 +387,25 @@ void skin_draw_footer_bg(Skin *skin, SDL_Surface *buffer)
 void skin_update_bg(Skin *skin, SDL_Surface *display, SDL_Surface *buffer)
 {
 	SDL_BlitSurface(buffer, NULL, display, NULL);
-	SDL_UpdateRect(display, 0, 0, 0, 0);
+	
+	if(strstr(code, "unknown")) {
+		SDL_UpdateRect(display, 0, 0, 0, 0);
+  		SDL_SoftStretch(display, NULL, ScreenSurface, NULL);
+	}
+	else {
+		if(SDL_MUSTLOCK(ScreenSurface)) SDL_LockSurface(ScreenSurface);
+		int x, y;
+		uint32_t *s = (uint32_t*)display->pixels;
+		uint32_t *d = (uint32_t*)ScreenSurface->pixels;
+		for(y=0; y<240; y++){
+			for(x=0; x<160; x++){
+			*d++ = *s++;
+			}
+			d+= 160;
+		}
+		if(SDL_MUSTLOCK(ScreenSurface)) SDL_UnlockSurface(ScreenSurface);
+		SDL_Flip(ScreenSurface);
+	}
 }
 
 int skin_textarea_get_number_of_lines(Skin *skin)

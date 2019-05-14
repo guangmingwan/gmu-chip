@@ -65,7 +65,7 @@ int cfg_add_key(ConfigFile *cf, char *key, char *value)
 	int result = CFG_SUCCESS;
 	int strsize = 0;
 	int i;
-	
+	//printf("wejpconfig:  cfg_add_key: %s => %s\n", key,value);
 	if (cfg_get_key_value(*cf, key) != NULL) { /* Key already exists->overwrite */
 		for (i = 0; i < cf->lastkey; i++)
 			if (strncmp(key, cf->key[i], MAX_LINE_LENGTH-1) == 0) {
@@ -109,6 +109,7 @@ int cfg_add_key(ConfigFile *cf, char *key, char *value)
 	} else {
 		result = CFG_ERROR;
 	}
+	/*printf("wejpconfig:  cfg_add_key result: %d\n", result);*/
 	return result;
 }
 
@@ -184,7 +185,7 @@ int cfg_read_config_file(ConfigFile *cf, char *filename)
 		}
 		fclose(file);
 	} else {
-		/*printf("config: Cannot open config file: %s\n", filename);*/
+		printf("config: Cannot open config file: %s\n", filename);
 		result = CFG_ERROR;
 	}
 	return result;
@@ -227,6 +228,7 @@ char *cfg_get_key_value(ConfigFile cf, char *key)
 			result = cf.value[i];
 			break;
 		}
+	/*printf("wejpconfig: cfg_get_key_value: %s => %s.\n", key , result);*/
 	return result;
 }
 

@@ -67,6 +67,7 @@ static PlaylistBrowser pb;
 static CoverViewer  cv;
 static Question     dlg;
 static SDL_TimerID  tid;
+SDL_Surface *ScreenSurface=NULL;
 
 typedef enum Update { UPDATE_NONE = 0, UPDATE_DISPLAY = 2, UPDATE_HEADER = 4,
                       UPDATE_FOOTER = 8, UPDATE_TEXTAREA = 16, UPDATE_ALL = 2+4+8+16 } Update;
@@ -102,9 +103,12 @@ static void gmu_load_icon(void)
 
 static void input_device_config(void)
 {
-	char tmp[256], *inputconf = NULL;
+	char tmp[256], inputFile[256],*inputconf = NULL;
 	inputconf = cfg_get_key_value(*config, "InputConfigFile");
-	if (!inputconf) inputconf = "gmuinput.conf";
+	if (!inputconf) {
+		snprintf(inputFile,256, "gmuinput.%s.conf", hw_get_device_model_code());
+		inputconf = inputFile;
+	}
 	snprintf(tmp, 255, "%s/%s", gmu_core_get_config_dir(), inputconf);
 	input_config_init(tmp);
 }
@@ -114,6 +118,8 @@ static SDL_Surface *init_sdl(int with_joystick, int width, int height, int fulls
 	SDL_Surface         *display = NULL;
 	const SDL_VideoInfo *video_info;
 	int                  init_okay = 0;
+
+  	wdprintf(V_ERROR, "sdl_frontend", "SDL initSubSystem: joystick:%d,fullscreen:%d,w:%d,h:%d .\n", with_joystick,fullscreen,width,height);
 
 	if (!SDL_WasInit(SDL_INIT_VIDEO)) {
 		if (SDL_InitSubSystem(SDL_INIT_VIDEO | (with_joystick ? SDL_INIT_JOYSTICK : 0)) < 0) {
@@ -128,9 +134,17 @@ static SDL_Surface *init_sdl(int with_joystick, int width, int height, int fulls
 
 	if (init_okay) {
 		video_info = SDL_GetVideoInfo();
+		const char* code= hw_get_device_model_code();
 		if (video_info) {
-			screen_max_width  = video_info->current_w;
-			screen_max_height = video_info->current_h;
+			
+			if(strstr(code, "unknown")) {
+				screen_max_width  = video_info->current_w;
+				screen_max_height  =  video_info->current_h; //fixed for retrogame
+			}
+			else {
+				screen_max_width  = 320;//video_info->current_w;
+				screen_max_height = 240;//video_info->current_h; fixed for retrogame
+			}
 			screen_max_depth  = video_info->vfmt->BitsPerPixel;
 			wdprintf(V_INFO, "sdl_frontend", "Available screen real estate: %d x %d pixels @ %d bpp\n",
 					 screen_max_width, screen_max_height, screen_max_depth);
@@ -153,11 +167,29 @@ static SDL_Surface *init_sdl(int with_joystick, int width, int height, int fulls
 		}
 
 		gmu_load_icon();
-		display = SDL_SetVideoMode(width, height, screen_max_depth,
+		#ifndef SDLFE_NO_HWACCEL
+			wdprintf(V_WARNING, "sdl_frontend", "not define SDLFE_NO_HWACCEL\n");
+		#endif
+		
+		ScreenSurface = SDL_SetVideoMode(width, height, screen_max_depth,
 #ifndef SDLFE_NO_HWACCEL
 								   SDL_HWSURFACE | SDL_HWACCEL |
 #endif
 								   SDL_RESIZABLE | fullscreen);
+
+	if(strstr(code, "unknown")) {
+	wdprintf(V_WARNING, "sdl_frontend", "SDL_SetVideoMode(%d,%d,%d).\n",width,height,screen_max_depth);
+    display = SDL_SetVideoMode(width, height, screen_max_depth,
+		#ifndef SDLFE_NO_HWACCEL
+								   SDL_HWSURFACE | SDL_HWACCEL |
+		#endif
+								   SDL_RESIZABLE | fullscreen);
+	}	
+	else {
+    	display = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 240, screen_max_depth, 0, 0, 0, 0);
+		SDL_ShowCursor(0);
+	}
+    
 		if (display == NULL) {
 			wdprintf(V_ERROR, "sdl_frontend", "ERROR: Could not initialize screen: %s\n", SDL_GetError());
 			exit(1);
@@ -169,7 +201,7 @@ static SDL_Surface *init_sdl(int with_joystick, int width, int height, int fulls
 			wdprintf(V_DEBUG, "sdl_frontend", "Opening joystick device.\n");
 			SDL_JoystickOpen(0);
 		}
-		SDL_WM_SetCaption("Gmu", NULL);
+		SDL_WM_SetCaption("Gmu Music Player", NULL);
 		SDL_EnableUNICODE(1);
 #ifdef HW_SDL_POST_INIT
 		hw_sdl_post_init();
@@ -633,6 +665,7 @@ static void run_player(char *skin_name, char *decoders_str)
 	int              backlight_poweron_on_track_change = 0;
 	int              seek_step = 10;
 
+wdprintf(V_DEBUG, "run_player", "%s ,%s\n", skin_name, decoders_str);
 	KeyActionMapping kam[LAST_ACTION];
 	int              user_key_action = -1;
 	TrackInfo       *ti = gmu_core_get_current_trackinfo_ref();
@@ -657,11 +690,16 @@ static void run_player(char *skin_name, char *decoders_str)
 	m_init(&m);
 
 	quit = DONT_QUIT;
+	wdprintf(V_DEBUG, "sdl_frontend", "quit :%d\n", quit);
 	/* Initialize and load button mapping */
 	{
 		char tmp[256], *keymap_file;
 		key_action_mapping_init(kam);
 		keymap_file = cfg_get_key_value(*config, "KeyMap");
+		if(keymap_file == NULL ) {
+			keymap_file = "unknown.keymap";
+		}
+		wdprintf(V_DEBUG, "sdl_frontend", "keymap_file :%s\n", keymap_file);
 		if (keymap_file) {
 			snprintf(tmp, 255, "%s/%s", gmu_core_get_config_dir(), keymap_file);
 			if (!key_action_mapping_load_config(kam, tmp)) {
@@ -670,7 +708,7 @@ static void run_player(char *skin_name, char *decoders_str)
 			}
 		} else {
 			quit = QUIT_WITH_ERROR;
-			wdprintf(V_ERROR, "sdl_frontend", "No keymap file specified.\n");
+			wdprintf(V_ERROR, "sdl_frontend", "Error: No keymap file specified.\n");
 		}
 	}
 
@@ -678,8 +716,10 @@ static void run_player(char *skin_name, char *decoders_str)
 		quit = QUIT_WITH_ERROR;
 		wdprintf(V_ERROR, "sdl_frontend", "skin_init() reported an error.\n");
 	}
-
+	wdprintf(V_DEBUG, "sdl_frontend", "quit :%d\n", quit);
 	if (quit == DONT_QUIT) {
+		wdprintf(V_DEBUG, "sdl_frontend", "SDL_CreateRGBSurface :%d,%d,%d\n",display->w,
+		                                        display->h, display->format->BitsPerPixel);
 		SDL_Surface *tmp = SDL_CreateRGBSurface(SDL_SWSURFACE, display->w,
 		                                        display->h, display->format->BitsPerPixel,
 		                                        0, 0, 0, 0);
@@ -928,7 +968,9 @@ static void run_player(char *skin_name, char *decoders_str)
 						update_display = 0;
 						/* Clear the whole screen: */
 						SDL_FillRect(display, NULL, 0);
-						SDL_UpdateRect(display, 0, 0, 0, 0);
+						//SDL_UpdateRect(display, 0, 0, 0, 0);
+						SDL_FillRect(ScreenSurface, NULL, 0);
+						SDL_UpdateRect(ScreenSurface, 0, 0, 0, 0);
 					} else {
 						/* Restore background: */
 						skin_update_bg(&skin, display, buffer);
@@ -1171,7 +1213,9 @@ static void run_player(char *skin_name, char *decoders_str)
 					hw_display_off();
 					/* Clear the whole screen: */
 					SDL_FillRect(display, NULL, 0);
-					SDL_UpdateRect(display, 0, 0, 0, 0);
+					//SDL_UpdateRect(display, 0, 0, 0, 0);
+				  SDL_FillRect(ScreenSurface, NULL, 0);
+					SDL_UpdateRect(ScreenSurface, 0, 0, 0, 0);
 					update_display = 0;
 					backlight_poweroff_timer = TIMER_ELAPSED;
 				}
@@ -1295,7 +1339,7 @@ static void run_player(char *skin_name, char *decoders_str)
 static void *start_player(void *arg)
 {
 	int             start = 1, setup = 0;
-	char            skin_name[128] = "";
+	char            skin_name[128] = "default-modern";
 
 	if (!getcwd(base_dir, 255)) start = 0;
 
@@ -1351,6 +1395,7 @@ static int init(void)
 	char *val;
 	SDL_Surface *ds;
 
+	wdprintf(V_DEBUG, "sdl_frontend", "init begin.\n");
 	config = gmu_core_get_config();
 	fullscreen = 0;
 	val = cfg_get_key_value(*config, "SDL_frontend.Width");
@@ -1369,6 +1414,7 @@ static int init(void)
 		if (pthread_create(&fe_thread, NULL, start_player, NULL) == 0)
 			res = 1;
 	}
+	wdprintf(V_DEBUG, "sdl_frontend", "init done.\n");
 	return res;
 }
 

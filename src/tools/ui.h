@@ -16,7 +16,7 @@
 
 #ifndef WEJ_UI_H
 #define WEJ_UI_H
-
+#include <wchar.h>
 #include "window.h"
 #include "listwidget.h"
 

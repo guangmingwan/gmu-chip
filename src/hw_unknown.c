@@ -14,7 +14,6 @@
  * for details.
  */
 #include <stdio.h>
-#include "oss_mixer.h"
 #include "debug.h"
 #include "hw_unknown.h"
 
@@ -32,24 +31,13 @@ void hw_display_on(void)
 
 int hw_open_mixer(int mixer_channel)
 {
-	int res = oss_mixer_open();
-	selected_mixer = mixer_channel;
-	wdprintf(V_INFO, "hw_unknown", "Selected mixer: %d\n", selected_mixer);
-	return res;
 }
-
 void hw_close_mixer(void)
 {
-	oss_mixer_close();
 }
 
 void hw_set_volume(int volume)
 {
-	if (selected_mixer >= 0) {
-		if (volume >= 0) oss_mixer_set_volume(selected_mixer, volume);
-	} else {
-		wdprintf(V_INFO, "hw_unknown", "No suitable mixer available.\n");
-	}
 }
 
 void hw_detect_device_model(void)
@@ -59,4 +47,9 @@ void hw_detect_device_model(void)
 const char *hw_get_device_model_name(void)
 {
 	return "Unknown device";
+}
+
+const char *hw_get_device_model_code(void)
+{
+	return "unknown";
 }

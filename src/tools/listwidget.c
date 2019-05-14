@@ -21,12 +21,8 @@
 #include <curses.h>
 #include "window.h"
 #include "listwidget.h"
-
-// Workaround - kinda hacky
-#define WACS_VLINE '|'
-#define WACS_DIAMOND '+'
-#define WACS_UARROW '^'
-#define WACS_DARROW 'v'
+#include <wchar.h>
+#include "wacs.h"
 
 static int internal_listwidget_set_length(ListWidget *lw, int rows)
 {

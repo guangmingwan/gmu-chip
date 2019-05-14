@@ -54,6 +54,7 @@ int input_config_init(char *inputconf_file)
 
 			snprintf(key, 127, "Button-%d", e);
 			val = cfg_get_key_value(inputconf, key);
+			//wdprintf(V_INFO, "inputconfig", "Initializing %s => %s\n", key, val) ;
 			/* split val into keycode and name */
 			if (val) {
 				val_int = atoi(val);
@@ -87,13 +88,17 @@ int input_config_init(char *inputconf_file)
 		if (e > 0) e--;
 
 		/* Load joystick configuration... */
+		
 		sprintf(key, "JoyButton-0");
+		
+
 		for (j = e; cfg_is_key_available(inputconf, key) && j < MAX_BUTTONS; j++) {
 			char *val, *name;
 			int   val_int, namelen;
 
 			snprintf(key, 127, "JoyButton-%d", j-e+1);
 			val = cfg_get_key_value(inputconf, key);
+			//wdprintf(V_INFO, "inputconfig", "Initializing %s => %s\n", key, val) ;
 			if (val) {
 				/* split val into keycode and name */
 				val_int = atoi(val);
@@ -116,8 +121,9 @@ int input_config_init(char *inputconf_file)
 				}
 			}
 		}
+		
 		if (j > 0) j--;
-
+		
 		/* Load joystick axis configuration... */
 		sprintf(key, "JoyAxis-0");
 		for (ja = j; cfg_is_key_available(inputconf, key) && j < MAX_BUTTONS; ja++) {
@@ -126,6 +132,7 @@ int input_config_init(char *inputconf_file)
 
 			snprintf(key, 127, "JoyAxis-%d", ja-j);
 			val = cfg_get_key_value(inputconf, key);
+			//wdprintf(V_INFO, "inputconfig", "Initializing %s => %s\n", key, val) ;
 			if (val) {
 				/* split val into keycode and name */
 				val_int = atoi(val);

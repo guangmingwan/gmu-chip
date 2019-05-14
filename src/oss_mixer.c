@@ -17,10 +17,10 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <sys/mman.h>
-#include <linux/fb.h>
+//#include <linux/fb.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
-#include <sys/soundcard.h>
+//#include <sys/soundcard.h>
 #include "oss_mixer.h"
 #include "debug.h"
 

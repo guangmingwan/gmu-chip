@@ -19,13 +19,15 @@
 #include "../gmudecoder.h"
 #include "../trackinfo.h"
 #include "../util.h"
+#include "../util.c"
 #include "tremor/ivorbiscodec.h"
 #include "tremor/ivorbisfile.h"
 #include "../debug.h"
+#include "../debug.c"
 
 static OggVorbis_File  vf, vf_metaonly;
 static vorbis_info    *vi;
-
+#define dprintf(ARGS)	printf ARGS; fflush(stdout)
 static const char *get_name(void)
 {
 	return "Tremor Vorbis decoder v1.0";

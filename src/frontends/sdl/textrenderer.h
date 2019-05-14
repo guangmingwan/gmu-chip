@@ -29,10 +29,17 @@ typedef struct _TextRenderer TextRenderer;
 
 typedef enum { RENDER_DEFAULT, RENDER_CROP, RENDER_ARROW } Render_Mode;
 
-int  textrenderer_init(TextRenderer *tr, char *chars_file, int chwidth, int chheight);
+int  textrenderer_init(TextRenderer *tr, char *chars_file, char* hzk_file,int chwidth, int chheight);
 void textrenderer_free(TextRenderer *tr);
+
+Uint32 getpixel(SDL_Surface *surface, int x, int y);
+void putpixel(SDL_Surface *surface, int x, int y, Uint32 pixel);
+
+void DrawOnePoint(SDL_Surface *screen, int x, int y, unsigned int is_hight_light);
+void DrawChineseCharacter(SDL_Surface *screen, int ShowX, int ShowY, Uint16 InCode, unsigned int is_hight_light);
+
 void textrenderer_draw_char(const TextRenderer *tr, UCodePoint ch, SDL_Surface *target, 
-                            int target_x, int target_y);
+                            int target_x, int target_y, unsigned int is_hight_light);
 void textrenderer_draw_string_codepoints(const TextRenderer *tr, const UCodePoint *str, 
                                          int str_len, SDL_Surface *target, 
                                          int target_x, int target_y);
