@@ -35,11 +35,11 @@ void textrenderer_free(TextRenderer *tr);
 Uint32 getpixel(SDL_Surface *surface, int x, int y);
 void putpixel(SDL_Surface *surface, int x, int y, Uint32 pixel);
 
-void DrawOnePoint(SDL_Surface *screen, int x, int y);
-void DrawChineseCharacter(SDL_Surface *screen, int ShowX, int ShowY, Uint16 InCode);
+void DrawOnePoint(SDL_Surface *screen, int x, int y, unsigned int is_hight_light);
+void DrawChineseCharacter(SDL_Surface *screen, int ShowX, int ShowY, Uint16 InCode, unsigned int is_hight_light);
 
 void textrenderer_draw_char(const TextRenderer *tr, UCodePoint ch, SDL_Surface *target, 
-                            int target_x, int target_y);
+                            int target_x, int target_y, unsigned int is_hight_light);
 void textrenderer_draw_string_codepoints(const TextRenderer *tr, const UCodePoint *str, 
                                          int str_len, SDL_Surface *target, 
                                          int target_x, int target_y);
