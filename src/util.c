@@ -27,7 +27,14 @@ void strtoupper(char *target, const char *src, int len)
 	int i, srclen = strlen(src);
 
 	for (i = 0; i < (srclen < len - 1 ? srclen : len - 1); i++)
-		target[i] = toupper(src[i]);
+	{
+		// if(src[i]<128) {
+		// 	target[i] = toupper(src[i]);
+		// }
+		// else {
+			target[i] = src[i];
+		// }
+	}
 	target[i] = '\0';
 }
 

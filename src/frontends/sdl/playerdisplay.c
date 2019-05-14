@@ -127,7 +127,9 @@ void player_display_draw(TextRenderer *tr, TrackInfo *ti, PB_Status player_statu
 		/* Fix the string in case it was cropped due to length limit 
 		 * and left an incomplete uft8 char at the end: */
 		charset_fix_broken_utf8_string(text);
-		str_len = charset_utf8_len(text)+1;
+		unsigned char gbk_str[1024];
+		u2g(text, strlen(text), gbk_str, sizeof(gbk_str));
+		str_len = charset_gbk_len(gbk_str)+1;
 
 		if (notice_time_left == 0) {
 			if (-display_message_pos < (str_len + str_max_visible_len)) {
@@ -139,19 +141,21 @@ void player_display_draw(TextRenderer *tr, TrackInfo *ti, PB_Status player_statu
 			lcd_text_cp = malloc(sizeof(UCodePoint) * lcd_text_cp_size);
 			if (lcd_text_cp) {
 				int i;
-				strtoupper(lcd_text, text, strlen(text)+1);
+				strtoupper(lcd_text, gbk_str, strlen(gbk_str)+1);
 				for (i = 0; i < lcd_text_cp_size; i++) lcd_text_cp[i] = ' ';
-				charset_utf8_to_codepoints(lcd_text_cp+str_max_visible_len, lcd_text, str_len);
+				charset_gbk_to_codepoints(lcd_text_cp+str_max_visible_len, lcd_text, str_len);
 			}
 		} else {
 			int i;
 			strncpy(lcd_text, notice_message, len);
-			str_len = charset_utf8_len(lcd_text)+1;
+			unsigned char gbk_lcd_str[1024];
+			u2g(lcd_text, strlen(lcd_text), gbk_lcd_str, sizeof(gbk_lcd_str));
+			str_len = charset_gbk_len(gbk_lcd_str)+1;
 			lcd_text[len] = '\0';
 			lcd_text_cp_size = str_len+str_max_visible_len+1;
 			lcd_text_cp = malloc(sizeof(UCodePoint) * lcd_text_cp_size);
 			for (i = 0; i < lcd_text_cp_size; i++) lcd_text_cp[i] = ' ';
-			charset_utf8_to_codepoints(lcd_text_cp, lcd_text, str_len);
+			charset_gbk_to_codepoints(lcd_text_cp, gbk_lcd_str, str_len);
 		}
 
 		if (lcd_text_cp) {
