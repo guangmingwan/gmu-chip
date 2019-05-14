@@ -99,24 +99,24 @@ void pl_browser_draw(PlaylistBrowser *pb, SDL_Surface *sdl_target)
 	switch (gmu_core_playlist_get_play_mode()) {
 		default:
 		case PM_CONTINUE:
-			mode = "continue";
+			mode = "顺序播放";
 			break;
 		case PM_REPEAT_ALL:
-			mode = "repeat all";
+			mode = "循环所有";
 			break;
 		case PM_REPEAT_1:
-			mode = "repeat track";
+			mode = "单曲循环";
 			break;
 		case PM_RANDOM:
-			mode = "random";
+			mode = "随机";
 			break;
 		case PM_RANDOM_REPEAT:
-			mode = "random+repeat";
+			mode = "随机+循环";
 			break;
 	}
 
-	snprintf(buf, 63, "Playlist (%d %s, mode: %s)", gmu_core_playlist_get_length(),
-	         gmu_core_playlist_get_length() != 1 ? "entries" : "entry", mode);
+	snprintf(buf, 63, "播放清单 (%d %s, 模式: %s)", gmu_core_playlist_get_length(),
+	         gmu_core_playlist_get_length() != 1 ? "条目" : "条目", mode);
 	skin_draw_header_text((Skin *)pb->skin, buf, sdl_target);
 
 	if (pb->first_visible_entry == NULL || pb->offset == 0) {

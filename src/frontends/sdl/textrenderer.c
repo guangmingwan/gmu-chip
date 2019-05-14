@@ -20,7 +20,8 @@
 #include "charset.h"
 #include "iconv.h"
 FILE *HZK;
-int textrenderer_init(TextRenderer *tr, char *chars_file, char *hzk_file, int chwidth, int chheight)
+//type 0 font1, 1 font2 3 font_dispalyer
+int textrenderer_init(TextRenderer *tr, char *chars_file, char *hzk_file, int chwidth, int chheight,int type)
 {
 	int result = 0;
 	SDL_Surface *tmp = IMG_Load(chars_file);
@@ -39,6 +40,15 @@ int textrenderer_init(TextRenderer *tr, char *chars_file, char *hzk_file, int ch
 		{
 			tr->chwidth = chwidth;
 			tr->chheight = chheight;
+			if(type == 0) {
+				tr->color = SDL_MapRGB(tr->chars->format, 0xff, 0xff, 0xff);
+			}
+			else if(type == 1) {
+				tr->color = SDL_MapRGB(tr->chars->format, 0xff, 0x94, 0x3e);
+			}
+			else {
+				tr->color = SDL_MapRGB(tr->chars->format, 0xff, 0xff, 0xff);
+			}
 			result = 1;
 		}
 		SDL_FreeSurface(tmp);
@@ -59,12 +69,12 @@ void textrenderer_free(TextRenderer *tr)
 	}
 }
 
-void textrenderer_draw_char(const TextRenderer *tr, UCodePoint ch, SDL_Surface *target, int target_x, int target_y, unsigned int is_hight_light)
+void textrenderer_draw_asc_char(const TextRenderer *tr, UCodePoint ch, SDL_Surface *target, int target_x, int target_y)
 {
 	int origin_x = target_x;
 	const int n = (ch - '!') * tr->chwidth;
 	SDL_Rect srect, drect;
-	fprintf(stderr,"textrenderer_draw_char::enter\n" );
+	//fprintf(stderr,"textrenderer_draw_asc_char::enter\n" );
 	if(ch == "\n") { //new line
 		target_y +=16;
 		target_x = origin_x;
@@ -82,16 +92,17 @@ void textrenderer_draw_char(const TextRenderer *tr, UCodePoint ch, SDL_Surface *
 			drect.w = 1;
 			drect.h = 1;
 
+			//fprintf(stderr,"textrenderer_draw_asc_char: 0x%2x,%c\n", ch ,ch );
 			SDL_BlitSurface(tr->chars, &srect, target, &drect);
-			fprintf(stderr,"textrenderer_draw_char::DrawASCChar: 0x%2x,%c\n", ch ,ch );
-			//textrenderer_draw_char(tr, str[i], target, target_x + i * (tr->chwidth + 1), target_y);
+			
+			//textrenderer_draw_asc_char(tr, str[i], target, target_x + i * (tr->chwidth + 1), target_y);
 		}
 		
 	}
 	else {
-		DrawChineseCharacter(target,target_x , target_y, ch,is_hight_light);
+		textrenderer_draw_cjk_char(tr, ch, target,target_x , target_y);
 	}
-	fprintf(stderr,"textrenderer_draw_char::exit\n" );
+	//fprintf(stderr,"textrenderer_draw_asc_char::exit\n" );
 
 	
 }
@@ -106,10 +117,10 @@ void textrenderer_draw_string_codepoints(const TextRenderer *tr, const UCodePoin
 		target_x = origin_x;
 	}
 	else if(str[i] < 0x7F) {
-		textrenderer_draw_char(tr, str[i], target, target_x + i * (tr->chwidth + 1), target_y,0);
+		textrenderer_draw_asc_char(tr, str[i], target, target_x + i * (tr->chwidth + 1), target_y);
 	}
 	else {
-		DrawChineseCharacter(target,target_x + i * (tr->chwidth + 1), target_y, str[i],0);
+		textrenderer_draw_cjk_char(tr, str[i], target,target_x + i * (tr->chwidth + 1), target_y);
 	}
 }
 
@@ -204,21 +215,21 @@ void putpixel(SDL_Surface *surface, int x, int y, Uint32 pixel)
         break;
     }
 }
-void DrawChineseCharacter(SDL_Surface *screen,int ShowX,int ShowY,Uint16  InCode, unsigned int is_hight_light)
+void textrenderer_draw_cjk_char(const TextRenderer *tr,Uint16  ch, SDL_Surface *screen,int ShowX,int ShowY)
 {
    int x=ShowX;
    int y=ShowY; // 显示位置设置
    int i,j,k;   
    unsigned char incode[3]={0};    // 要读出的汉字
-   incode[0]=(InCode & 0xff00 ) >> 8;
-   incode[1]=InCode & 0x00ff; // GBK内码
+   incode[0]=(ch & 0xff00 ) >> 8;
+   incode[1]=ch & 0x00ff; // GBK内码
    unsigned char licode[3]={0};
    licode[0] = incode[1];
    licode[1] = incode[0]; 
    unsigned char buf[10];
    g2u(incode, strlen(licode), buf, sizeof(buf));
 
-   fprintf(stderr,"DrawCNGBKChar: 0x%4x,%d,%d,%s\n", InCode,ShowX,ShowY,buf);
+   //fprintf(stderr,"textrenderer_draw_cjk_char: 0x%4x,%d,%d,%s\n", ch,ShowX,ShowY,buf);
    unsigned char qh,wh;   
    unsigned long offset;   
          
@@ -239,14 +250,14 @@ void DrawChineseCharacter(SDL_Surface *screen,int ShowX,int ShowY,Uint16  InCode
 			{
 				if(((mat[j*2+i]>>(7-k))&0x1)!=0)
 				{
-					DrawOnePoint(screen,x+6*i+k,y+j,is_hight_light);
+					DrawOnePoint(screen,x+6*i+k,y+j,tr);
 				}
 			}
 		}
    }
 }
  
-void DrawOnePoint(SDL_Surface *screen,int x,int y, unsigned int is_hight_light)
+void DrawOnePoint(SDL_Surface *screen,int x,int y, const TextRenderer *tr)
 {
     Uint32 white;
     /* Map the color yellow to this display (R=0xff, G=ff, B=0x00)
@@ -255,7 +266,7 @@ void DrawOnePoint(SDL_Surface *screen,int x,int y, unsigned int is_hight_light)
     white = SDL_MapRGB(screen->format, 0xff, 0xff, 0xff);
 
 	Uint32 blue;
-	blue = SDL_MapRGB(screen->format, 0xff, 0xff, 0xff);
+	blue = SDL_MapRGB(screen->format, 0xff, 0x94, 0x3e);
     /* Lock the screen for direct access to the pixels */
     if ( SDL_MUSTLOCK(screen) ) {
         if ( SDL_LockSurface(screen) < 0 ) {
@@ -263,7 +274,7 @@ void DrawOnePoint(SDL_Surface *screen,int x,int y, unsigned int is_hight_light)
             return;
         }
     }
-    putpixel(screen, x, y, is_hight_light? blue : white);
+    putpixel(screen, x, y, tr->color);
     if ( SDL_MUSTLOCK(screen) ) {
         SDL_UnlockSurface(screen);
     }
@@ -317,10 +328,10 @@ void textrenderer_draw_string_with_highlight(const TextRenderer *tr1, const Text
 	if (rm == RENDER_ARROW)
 	{
 		if (str_offset > 0)
-			textrenderer_draw_char(tr2, '<', target, target_x, target_y,1);
+			textrenderer_draw_asc_char(tr2, '<', target, target_x, target_y);
 		if (textrenderer_get_string_length(str) - str_offset > max_length)
 		{
-			textrenderer_draw_char(tr2, '>', target, target_x + (max_length - 1) * (tr2->chwidth + 1), target_y, 1);
+			textrenderer_draw_asc_char(tr2, '>', target, target_x + (max_length - 1) * (tr2->chwidth + 1), target_y);
 			max_length--;
 		}
 	}
@@ -346,7 +357,7 @@ void textrenderer_draw_string_with_highlight(const TextRenderer *tr1, const Text
 	{
 		for (i = 0, j = 0; i < utf8_chars && j - str_offset < max_length; i++, j++)
 		{
-			if (str[i] == '*' && i + 1 < utf8_chars && str[i + 1] == '*')
+			if (ustr[i] == '*' && i + 1 < utf8_chars && ustr[i + 1] == '*')
 			{
 				highlight = !highlight;
 				i += 2;
@@ -354,11 +365,11 @@ void textrenderer_draw_string_with_highlight(const TextRenderer *tr1, const Text
 			if (j >= str_offset && (j != str_offset || str_offset == 0))
 			{
 				if (!highlight)
-					textrenderer_draw_char(tr1, ustr[i], target,
-										   target_x + (j - str_offset) * (tr1->chwidth + 1), target_y,0);
+					textrenderer_draw_asc_char(tr1, ustr[i], target,
+										   target_x + (j - str_offset) * (tr1->chwidth + 1), target_y);
 				else
-					textrenderer_draw_char(tr2, ustr[i], target,
-										   target_x + (j - str_offset) * (tr2->chwidth + 1), target_y,1);
+					textrenderer_draw_asc_char(tr2, ustr[i], target,
+										   target_x + (j - str_offset) * (tr2->chwidth + 1), target_y);
 			}
 		}
 	}

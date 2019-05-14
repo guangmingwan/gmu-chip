@@ -91,7 +91,7 @@ DEC_vorbis_LFLAGS=charset.o -lvorbisidec -lm
 DEC_mpg123_LFLAGS=src/ringbuffer.c src/reader.c src/id3.c src/charset.c src/debug.c src/util.c src/trackinfo.c src/wejpconfig.c -lmpg123
 DEC_flac_LFLAGS=src/charset.c src/debug.c src/util.c src/trackinfo.c -lFLAC
 DEC_wavpack_LFLAGS=src/charset.c src/debug.c src/util.c src/trackinfo.c -lFLAC
-DEC_musepack_LFLAGS=-lmpcdec
+DEC_musepack_LFLAGS=-lmpcdec 
 DEC_mikmod_LFLAGS=src/charset.c src/debug.c src/util.c src/trackinfo.c -lmikmod
 DEC_speex_LFLAGS=src/charset.c src/debug.c src/util.c src/trackinfo.c -logg -lspeex
 
@@ -109,6 +109,7 @@ all: desc $(BINARY) decoders frontends $(TOOLS_TO_BUILD)
 desc:
 	mkdir -p decoders
 	mkdir -p frontends
+	
 	@echo -e "building $(TARGET)"
 decoders: $(DECODERS_TO_BUILD)
 	

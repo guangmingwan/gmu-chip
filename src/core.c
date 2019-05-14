@@ -1078,7 +1078,7 @@ int main(int argc, char **argv)
 			global_param = 0;
 		}
 		if (trackinfo_is_updated(&current_track_ti)) {
-			wdprintf(V_INFO, "gmu", "Track info:\n\tArtist: %s\n\tTitle : %s\n\tAlbum : %s\n",
+			wdprintf(V_INFO, "gmu", "曲目信息:\n\t艺术家 : %s\n\t标题 : %s\n\t专辑 : %s\n",
 			         trackinfo_get_artist(&current_track_ti),
 				     trackinfo_get_title(&current_track_ti),
 				     trackinfo_get_album(&current_track_ti));

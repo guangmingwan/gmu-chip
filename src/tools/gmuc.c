@@ -284,7 +284,7 @@ static char *cmd_dir_read(UI *ui, JSON_Object *json)
 				if (!is_dir)
 					snprintf(tmp, 15, "%d", fsize / 1024);
 				else
-					snprintf(tmp, 15, "[DIR]");
+					snprintf(tmp, 15, "[目录]");
 				listwidget_set_cell_data(ui->lw_fb, i, 0, tmp);
 			} else {
 				break;
@@ -723,7 +723,7 @@ int main(int argc, char **argv)
 									int   sel_row = listwidget_get_selection(ui.lw_fb);
 									char *ftype = listwidget_get_row_data(ui.lw_fb, sel_row, 0);
 									char *file = listwidget_get_row_data(ui.lw_fb, sel_row, 1);
-									char *type = strcmp(ftype, "[DIR]") == 0 ? "dir" : "file";
+									char *type = strcmp(ftype, "[目录]") == 0 ? "dir" : "file";
 									char *cur_dir_esc = json_string_escape_alloc(cur_dir);
 									char *file_esc = json_string_escape_alloc(file);
 									if (cur_dir_esc && file_esc) {
@@ -862,7 +862,7 @@ int main(int argc, char **argv)
 											char tmp[256], *prev_cur_dir = cur_dir;
 											int  sel_row = listwidget_get_selection(ui.lw_fb);
 											char *ftype = listwidget_get_row_data(ui.lw_fb, sel_row, 0);
-											if (ftype && strcmp(ftype, "[DIR]") == 0) {
+											if (ftype && strcmp(ftype, "[目录]") == 0) {
 												cur_dir = dir_get_new_dir_alloc(prev_cur_dir ? prev_cur_dir : "/", 
 															 listwidget_get_row_data(ui.lw_fb, sel_row, 1));
 												free(prev_cur_dir);

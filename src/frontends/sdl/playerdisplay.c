@@ -59,11 +59,11 @@ static void player_display_show_volume(TextRenderer *tr, SDL_Surface *target, in
 		else if (volume == 10) vol_ch2 = 'l';
 
 		if (vol_ch1)
-			textrenderer_draw_char(&skin.data.font_display, vol_ch1, target, 
+			textrenderer_draw_asc_char(&skin.data.font_display, vol_ch1, target, 
 			                       skin.config.volume_offset_x,
 			                       skin.config.volume_offset_y);		
 		if (vol_ch2)
-			textrenderer_draw_char(&skin.data.font_display, vol_ch2, target, 
+			textrenderer_draw_asc_char(&skin.data.font_display, vol_ch2, target, 
 			                       skin.config.volume_offset_x + tr->chwidth,
 			                       skin.config.volume_offset_y);
 	}*/
@@ -175,11 +175,11 @@ void player_display_draw(TextRenderer *tr, TrackInfo *ti, PB_Status player_statu
 			char       busy_ch[] = { '-', '\\', 'I', '/' };
 			static int ch_sel = 0;
 
-			textrenderer_draw_char(&skin.font_display, busy_ch[ch_sel], buffer,
+			textrenderer_draw_asc_char(&skin.font_display, busy_ch[ch_sel], buffer,
 			                      skin.title_scroller_offset_x1 +
 			                      (title_scroller_chars-1) *
 			                      (skin.font_display_char_width+1),
-			                      skin.title_scroller_offset_y,0);
+			                      skin.title_scroller_offset_y);
 			ch_sel++;
 			if (ch_sel > 3) ch_sel = 0;
 		} else if ((shutdown_time > 0 || shutdown_time == -1) && len > 3) {

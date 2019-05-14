@@ -102,17 +102,17 @@ void cover_viewer_update_data(CoverViewer *cv, TrackInfo *ti)
 	}
 
 	snprintf(cv->track_info_text, SIZE_TRACKINFO_TEXT-1,
-	         "**Title:**\n%s\n**Artist:**\n%s\n**Album:**\n%s\n**Track number:**\n%s\n"
-	         "**Date:**\n%s\n**Length:**\n%02d:%02d\n**Samplerate:**\n%d Hz\n"
-	         "**Channels:**\n%d (%s)\n**Bitrate:**\n%ld kbit/s %s\n**File type:**\n%s\n"
-	         "**File:**\n%s%s",
+	         "**标题:**\n%s\n**艺术家:**\n%s\n**专辑:**\n%s\n**曲目编号:**\n%s\n"
+	         "**日期:**\n%s\n**长度:**\n%02d:%02d\n**采样率:**\n%d 赫兹\n"
+	         "**频道:**\n%d (%s)\n**比特率:**\n%ld kbit/s %s\n**文件类型:**\n%s\n"
+	         "**文件名:**\n%s%s",
 	         trackinfo_get_title(ti), trackinfo_get_artist(ti), trackinfo_get_album(ti),
 	         trackinfo_get_tracknr(ti), trackinfo_get_date(ti), trackinfo_get_length_minutes(ti),
 	         trackinfo_get_length_seconds(ti), trackinfo_get_samplerate(ti),
-	         trackinfo_get_channels(ti), trackinfo_get_channels(ti) >= 2 ? "stereo" : "mono",
-	         trackinfo_get_bitrate(ti) / 1000, trackinfo_is_vbr(ti) ? "(average)" : "",
+	         trackinfo_get_channels(ti), trackinfo_get_channels(ti) >= 2 ? "立体声" : "单声道",
+	         trackinfo_get_bitrate(ti) / 1000, trackinfo_is_vbr(ti) ? "(平均)" : "",
 	         trackinfo_get_file_type(ti), trackinfo_get_file_name(ti), lyrics);
-	text_browser_set_text(&cv->tb, cv->track_info_text, "Track info");
+	text_browser_set_text(&cv->tb, cv->track_info_text, "曲目信息");
 	if (lyrics[0] != '\0') free(lyrics);
 }
 

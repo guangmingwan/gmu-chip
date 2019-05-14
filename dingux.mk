@@ -13,7 +13,7 @@
 # the License. See the file COPYING in the Gmu's main directory
 # for details.
 #
-
+CROSS_COMPILE ?= mipsel-linux-
 #DECODERS_TO_BUILD=decoders/vorbis.so decoders/musepack.so decoders/flac.so decoders/wavpack.so decoders/mpg123.so decoders/mikmod.so
 DECODERS_TO_BUILD=decoders/vorbis.so decoders/flac.so decoders/wavpack.so decoders/mpg123.so decoders/musepack.so
 FRONTENDS_TO_BUILD=frontends/sdl.so frontends/log.so
@@ -26,5 +26,5 @@ STRIP=mipsel-linux-strip
 COPTS?=-O3 -ffast-math
 CFLAGS=-fomit-frame-pointer $(SDL_CFLAGS) -DFILE_HW_H="\"hw_$(TARGET).h\""
 #LFLAGS=-s -lpthread -lm -ldl -lz -lgcc -Wl,-export-dynamic
-LFLAGS=-s -L/opt/buildroot-2018.02.11/output/target/usr/lib -L/opt/opendingux-toolchain/usr/lib/ -L/opt/buildroot-2018.02.11/output/host/lib/ -lpthread -lm -ldl -lz -lgcc -Wl,-export-dynamic
+LFLAGS=-s -L/opt/buildroot-2018.02.11/output/host/mipsel-buildroot-linux-uclibc/sysroot/usr/lib/ -L/opt/buildroot-2018.02.11/output/target/usr/lib -L/opt/opendingux-toolchain/usr/lib/ -L/opt/buildroot-2018.02.11/output/host/lib/ -lpthread -lm -ldl -lz -lgcc -Wl,-export-dynamic
 DISTFILES=$(BINARY) frontends decoders themes libs.dingux gmu.png README.txt gmu.dge COPYING gmuinput.dingux.conf gmu.bmp

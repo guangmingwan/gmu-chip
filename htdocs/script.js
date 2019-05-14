@@ -564,7 +564,7 @@ function fb_item_row_construct(item, col)
 		default:
 		case 0:
 			if (fb_dir[item] !== undefined)
-				res = fb_dir[item]['is_dir'] ? '[DIR]' : parseInt(fb_dir[item]['size'] / 1024);
+				res = fb_dir[item]['is_dir'] ? '[目录]' : parseInt(fb_dir[item]['size'] / 1024);
 			else
 				res = '';
 			break;
