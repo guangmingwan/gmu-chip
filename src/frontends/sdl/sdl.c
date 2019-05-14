@@ -1339,7 +1339,7 @@ wdprintf(V_DEBUG, "run_player", "%s ,%s\n", skin_name, decoders_str);
 static void *start_player(void *arg)
 {
 	int             start = 1, setup = 0;
-	char            skin_name[128] = "default-modern-large";
+	char            skin_name[128] = "dbcompo";
 
 	if (!getcwd(base_dir, 255)) start = 0;
 

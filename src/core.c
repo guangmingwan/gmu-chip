@@ -170,7 +170,7 @@ static void add_default_cfg_settings(ConfigFile *config)
 	cfg_add_key(config, "VolumeControl", "Software"); /* Software, Hardware, Hardware+Software */
 	cfg_add_key(config, "VolumeHardwareMixerChannel", "0");
 	cfg_add_key(config, "Volume", "7");
-	cfg_add_key(config, "DefaultSkin", "default-modern-large");
+	cfg_add_key(config, "DefaultSkin", "dbcompo");
 	cfg_add_key(config, "AutoSelectCurrentPlaylistItem", "no");
 	cfg_add_key(config, "AutoPlayOnProgramStart", "no");
 	cfg_add_key(config, "Scroll", "always");
