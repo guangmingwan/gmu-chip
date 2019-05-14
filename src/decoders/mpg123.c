@@ -16,6 +16,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#define MPG123_LARGESUFFIX _64
 #include <mpg123.h>
 #include "../gmudecoder.h"
 #include "../trackinfo.h"

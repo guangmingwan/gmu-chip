@@ -137,14 +137,8 @@ static SDL_Surface *init_sdl(int with_joystick, int width, int height, int fulls
 		const char* code= hw_get_device_model_code();
 		if (video_info) {
 			
-			if(strstr(code, "unknown")) {
-				screen_max_width  = video_info->current_w;
-				screen_max_height  =  video_info->current_h; //fixed for retrogame
-			}
-			else {
-				screen_max_width  = 320;//video_info->current_w;
-				screen_max_height = 240;//video_info->current_h; fixed for retrogame
-			}
+			screen_max_width  = video_info->current_w;
+			screen_max_height = video_info->current_h;
 			screen_max_depth  = video_info->vfmt->BitsPerPixel;
 			wdprintf(V_INFO, "sdl_frontend", "Available screen real estate: %d x %d pixels @ %d bpp\n",
 					 screen_max_width, screen_max_height, screen_max_depth);
@@ -171,22 +165,23 @@ static SDL_Surface *init_sdl(int with_joystick, int width, int height, int fulls
 			wdprintf(V_WARNING, "sdl_frontend", "not define SDLFE_NO_HWACCEL\n");
 		#endif
 		
-		ScreenSurface = SDL_SetVideoMode(width, height, screen_max_depth,
-#ifndef SDLFE_NO_HWACCEL
-								   SDL_HWSURFACE | SDL_HWACCEL |
-#endif
-								   SDL_RESIZABLE | fullscreen);
+		
 
 	if(strstr(code, "unknown")) {
-	wdprintf(V_WARNING, "sdl_frontend", "SDL_SetVideoMode(%d,%d,%d).\n",width,height,screen_max_depth);
-    display = SDL_SetVideoMode(width, height, screen_max_depth,
+		wdprintf(V_WARNING, "sdl_frontend", "SDL_SetVideoMode(%d,%d,%d).\n",width,height,screen_max_depth);
+		display = SDL_SetVideoMode(width, height, screen_max_depth,
 		#ifndef SDLFE_NO_HWACCEL
 								   SDL_HWSURFACE | SDL_HWACCEL |
 		#endif
 								   SDL_RESIZABLE | fullscreen);
 	}	
 	else {
-    	display = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 240, screen_max_depth, 0, 0, 0, 0);
+		ScreenSurface = SDL_SetVideoMode(width, 480, screen_max_depth,
+#ifndef SDLFE_NO_HWACCEL
+								   SDL_HWSURFACE | SDL_HWACCEL |
+#endif
+								   SDL_RESIZABLE | fullscreen);
+    	display = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 240, 16, 0, 0, 0, 0);
 		SDL_ShowCursor(0);
 	}
     
