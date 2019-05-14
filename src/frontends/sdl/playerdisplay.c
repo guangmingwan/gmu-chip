@@ -175,7 +175,7 @@ void player_display_draw(TextRenderer *tr, TrackInfo *ti, PB_Status player_statu
 			                      skin.title_scroller_offset_x1 +
 			                      (title_scroller_chars-1) *
 			                      (skin.font_display_char_width+1),
-			                      skin.title_scroller_offset_y);
+			                      skin.title_scroller_offset_y,0);
 			ch_sel++;
 			if (ch_sel > 3) ch_sel = 0;
 		} else if ((shutdown_time > 0 || shutdown_time == -1) && len > 3) {
