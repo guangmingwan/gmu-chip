@@ -105,7 +105,24 @@ void text_browser_draw(TextBrowser *tb, SDL_Surface *sdl_target)
 			line_length++;
 			if (tb->text[char_offset+line_length] == '*' && tb->text[char_offset+line_length+1] == '*')
 				red++;
+			if (tb->text[char_offset+line_length] == '*' 
+			&& tb->text[char_offset+line_length+1] == 'Q'
+			&& tb->text[char_offset+line_length+2] == 'R'
+			&& tb->text[char_offset+line_length+3] == '*')
+			{
+				tb->text[char_offset+line_length] = ' ';
+				tb->text[char_offset+line_length+1] = ' ';
+				tb->text[char_offset+line_length+2] = ' ';
+				tb->text[char_offset+line_length+3] = ' ';
+				SDL_Rect offset;
+				offset.x = tb->pos_x + indent;
+				offset.y = tb->pos_y + yo;
+				yo += 192 + 1;
+				SDL_BlitSurface( tb->qr, NULL, sdl_target, &offset ); 
+
+			}
 		}
+		
 		/* If we do not have reached the end of the text yet, *
 		 * check for an additional \r at each line ending:    */
 		if (tb->text[char_offset+line_length] != '\0' && tb->text[char_offset+line_length+1] == '\r')
@@ -135,6 +152,7 @@ void text_browser_draw(TextBrowser *tb, SDL_Surface *sdl_target)
 		yo += tb->skin->font1_char_height+1;
 		char_offset += line_length + 1;
 	}
+	
 	if (tb->char_offset > 0)
 		skin_draw_scroll_arrow_up((Skin *)tb->skin, sdl_target);
 	if (!tb->end_reached)

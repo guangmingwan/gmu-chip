@@ -197,7 +197,7 @@ void player_display_draw(TextRenderer *tr, TrackInfo *ti, PB_Status player_statu
 		}
 	}
 	if (skin.bitrate_offset_x >= 0 && skin.bitrate_offset_y >= 0) {
-		snprintf(buf, 27, "%4d 比特率", (int)(ti->recent_bitrate / 1000));
+		snprintf(buf, 27, "%4d K 比特率", (int)(ti->recent_bitrate / 1000));
 		textrenderer_draw_string(&skin.font_display, buf, buffer,
 		                         skin.bitrate_offset_x, skin.bitrate_offset_y);
 	}

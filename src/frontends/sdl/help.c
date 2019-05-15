@@ -17,7 +17,7 @@
 #include "textbrowser.h"
 #include "help.h"
 #include "core.h"
-
+#include "qr.h"
 static const char *text_help =
 "欢迎使用GMU音乐播放器！\n"
 "这是一个简短的介绍，来讲述：\n"
@@ -85,12 +85,31 @@ static const char *text_help =
 "播放列表中至少有一个文件后\n"
 "您可以按**%s**开始播放。\n\n"
 "享受GMU音乐播放器的乐趣。\n"
-"/wej & netwan";
+"/作者:wej\n"
+"/汉化:netwan\n"
+"/开源掌机QQ群:178550696\n"
+"如果这个软件好用，请微信扫码给程序员加个鸡腿；）\n\n"
+"*QR*\n\n"
+"\n\n"
+"\n\n"
+"\n\n"
+"\n\n"
+"\n\n"
+"\n\n"
+"\n\n"
+"\n\n"
+"\n\n"
+"\n\n"
+"\n\n"
+"\n\n";
 
 void help_init(TextBrowser *tb_help, Skin *skin, KeyActionMapping *kam)
 {
 	static char txt[3072];
-
+	printf("help_init start\n");
+	SDL_RWops *pixelsWop = SDL_RWFromConstMem((const unsigned char *)qr2_bmp, sizeof(qr2_bmp));
+	tb_help->qr = SDL_LoadBMP_RW(pixelsWop, 1);
+	printf("help_init done\n");
 	snprintf(txt, 3071, text_help,
 	                    key_action_mapping_get_button_name(kam, MODIFIER),
 	                    key_action_mapping_get_full_button_name(kam, MOVE_CURSOR_UP),

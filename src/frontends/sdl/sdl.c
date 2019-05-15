@@ -167,6 +167,11 @@ static SDL_Surface *init_sdl(int with_joystick, int width, int height, int fulls
 		
 		
 
+	ScreenSurface = SDL_SetVideoMode(width, 480, screen_max_depth,
+	#ifndef SDLFE_NO_HWACCEL
+									SDL_HWSURFACE | SDL_HWACCEL |
+	#endif
+									SDL_RESIZABLE | fullscreen);
 	if(strstr(code, "unknown")) {
 		wdprintf(V_WARNING, "sdl_frontend", "SDL_SetVideoMode(%d,%d,%d).\n",width,height,screen_max_depth);
 		display = SDL_SetVideoMode(width, height, screen_max_depth,
@@ -176,11 +181,7 @@ static SDL_Surface *init_sdl(int with_joystick, int width, int height, int fulls
 								   SDL_RESIZABLE | fullscreen);
 	}	
 	else {
-		ScreenSurface = SDL_SetVideoMode(width, 480, screen_max_depth,
-#ifndef SDLFE_NO_HWACCEL
-								   SDL_HWSURFACE | SDL_HWACCEL |
-#endif
-								   SDL_RESIZABLE | fullscreen);
+		
     	display = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 240, 16, 0, 0, 0, 0);
 		SDL_ShowCursor(0);
 	}
