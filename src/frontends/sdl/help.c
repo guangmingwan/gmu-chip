@@ -88,26 +88,27 @@ static const char *text_help =
 "/作者:wej\n"
 "/汉化:netwan\n"
 "/开源掌机QQ群:178550696\n"
-"如果这个软件好用，请微信扫码给程序员加个鸡腿；）\n\n"
-"*QR*\n\n"
-"\n\n"
-"\n\n"
-"\n\n"
-"\n\n"
-"\n\n"
-"\n\n"
-"\n\n"
-"\n\n"
-"\n\n"
-"\n\n"
-"\n\n"
-"\n\n";
-
+"如果你喜欢这个软件\n"
+"请微信扫码给程序员加个鸡腿\n"
+"￥6.66\n"
+"*QR*\n"
+"\n"
+"\n"
+"\n"
+"\n"
+"\n"
+"\n"
+"\n"
+"\n"
+"\n"
+"\n"
+"\n"
+"\n";
 void help_init(TextBrowser *tb_help, Skin *skin, KeyActionMapping *kam)
 {
 	static char txt[3072];
 	printf("help_init start\n");
-	SDL_RWops *pixelsWop = SDL_RWFromConstMem((const unsigned char *)qr2_bmp, sizeof(qr2_bmp));
+	SDL_RWops *pixelsWop = SDL_RWFromConstMem((const unsigned char *)qr_bmp, sizeof(qr_bmp));
 	tb_help->qr = SDL_LoadBMP_RW(pixelsWop, 1);
 	printf("help_init done\n");
 	snprintf(txt, 3071, text_help,

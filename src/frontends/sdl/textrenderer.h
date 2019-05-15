@@ -30,7 +30,7 @@ typedef struct _TextRenderer TextRenderer;
 
 typedef enum { RENDER_DEFAULT, RENDER_CROP, RENDER_ARROW } Render_Mode;
 
-int  textrenderer_init(TextRenderer *tr, char *chars_file, char* hzk_file,int chwidth, int chheight, int type);
+int  textrenderer_init(TextRenderer *tr, char *chars_file,int chwidth, int chheight, int type);
 void textrenderer_free(TextRenderer *tr);
 
 Uint32 getpixel(SDL_Surface *surface, int x, int y);

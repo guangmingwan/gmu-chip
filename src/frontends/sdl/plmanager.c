@@ -67,7 +67,7 @@ void plmanager_draw(PlaylistManager *ps, SDL_Surface *sdl_target)
 	int posx = gmu_widget_get_pos_x((GmuWidget *)&ps->skin->lv, 1);
 	int posy = gmu_widget_get_pos_y((GmuWidget *)&ps->skin->lv, 1);
 
-	skin_draw_header_text((Skin *)ps->skin, "Save playlist as... / Load playlist", sdl_target);
+	skin_draw_header_text((Skin *)ps->skin, "播放列表另存为... / 加载播放列表 ", sdl_target);
 
 	for (i = 0; i < PLMANAGER_MAX_ITEMS && ps->filenames[i][0] != '\0'; i++) {
 		if (i == ps->selection)

@@ -19,20 +19,20 @@
 #include "SDL_image.h"
 #include "charset.h"
 #include "iconv.h"
-FILE *HZK;
+#include "hzk12.h"
 //type 0 font1, 1 font2 3 font_dispalyer
-int textrenderer_init(TextRenderer *tr, char *chars_file, char *hzk_file, int chwidth, int chheight,int type)
+int textrenderer_init(TextRenderer *tr, char *chars_file, int chwidth, int chheight,int type)
 {
 	int result = 0;
 	SDL_Surface *tmp = IMG_Load(chars_file);
-	if (hzk_file)
-	{
-		if ((HZK = fopen(hzk_file, "rb")) == NULL)
-		{
-			printf("Can't Open %s\n", hzk_file);
-			exit(0);
-		}
-	}
+	// if (hzk_file)
+	// {
+	// 	if ((HZK = fopen(hzk_file, "rb")) == NULL)
+	// 	{
+	// 		printf("Can't Open %s\n", hzk_file);
+	// 		exit(0);
+	// 	}
+	// }
 	tr->chars = NULL;
 	if (tmp)
 	{
@@ -63,10 +63,10 @@ void textrenderer_free(TextRenderer *tr)
 		SDL_FreeSurface(tr->chars);
 		tr->chars = NULL;
 	}
-	if(HZK) {
-		fclose(HZK);
-		HZK = NULL;
-	}
+	// if(HZK) {
+	// 	fclose(HZK);
+	// 	HZK = NULL;
+	// }
 }
 
 void textrenderer_draw_asc_char(const TextRenderer *tr, UCodePoint ch, SDL_Surface *target, int target_x, int target_y)
@@ -240,8 +240,9 @@ void textrenderer_draw_cjk_char(const TextRenderer *tr,Uint16  ch, SDL_Surface *
    wh=incode[1]-0xa0;                
    offset=(94*(qh-1)+(wh-1))*24;  
    
-   fseek(HZK,offset,SEEK_SET);   
-   fread(mat,24,1,HZK);
+   //fseek(HZK,offset,SEEK_SET);   
+   //fread(mat,24,1,HZK);
+   memcpy(mat,HZK12 +offset,24);
    for(j=0;j<12;j++)
    {
         for(i=0;i<2;i++)

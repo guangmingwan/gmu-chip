@@ -211,23 +211,23 @@ static int skin_config_load(Skin *skin, char *skin_name)
 				{
 					int  a, b, c;
 					char tmp[256];
-					char hzk_filename[256];
+					//char hzk_filename[256];
 					wdprintf(V_DEBUG, "skin", "Loading fonts...\n");
 					snprintf(tmp, 255, "%s/themes/%s/%s", gmu_core_get_base_dir(), skin->name, skin->font_display_name);
 
-					snprintf(hzk_filename, 255, "%s/%s", gmu_core_get_base_dir(), "hzk12");
+					//snprintf(hzk_filename, 255, "%s/%s", gmu_core_get_base_dir(), "hzk12");
 
 					wdprintf(V_DEBUG, "skin", "Loading %s\n", tmp);
-					a = textrenderer_init(&skin->font_display, tmp, hzk_filename,
+					a = textrenderer_init(&skin->font_display, tmp,
 					                      skin->font_display_char_width, skin->font_display_char_height,2);
 					snprintf(tmp, 255, "%s/themes/%s/%s", gmu_core_get_base_dir(), skin->name, skin->font1_name);
 					wdprintf(V_DEBUG, "skin", "Loading %s\n", tmp);
-					b = textrenderer_init(&skin->font1, tmp, NULL,
+					b = textrenderer_init(&skin->font1, tmp,
 								          skin->font1_char_width, skin->font1_char_height, 0);
 					
 					snprintf(tmp, 255, "%s/themes/%s/%s", gmu_core_get_base_dir(), skin->name, skin->font2_name);
 					wdprintf(V_DEBUG, "skin", "Loading %s\n", tmp);
-					c = textrenderer_init(&skin->font2, tmp,NULL,
+					c = textrenderer_init(&skin->font2, tmp,
 					                      skin->font2_char_width, skin->font2_char_height,1);
 					
 					if (a && b && c)
