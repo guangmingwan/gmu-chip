@@ -1459,7 +1459,7 @@ static int event_callback(GmuEvent event, int param)
 			break;
 		case GMU_VOLUME_CHANGE: {
 			char volnotice[20];
-			snprintf(volnotice, 19, "VOLUME: %d/%d", gmu_core_get_volume(), gmu_core_get_volume_max());
+			snprintf(volnotice, 19, "音量: %d/%d", gmu_core_get_volume(), gmu_core_get_volume_max());
 			player_display_set_notice_message(volnotice, NOTICE_DELAY);
 			break;
 		}
@@ -1475,19 +1475,19 @@ static int event_callback(GmuEvent event, int param)
 			char *notice_msg = NULL;
 			switch (gmu_core_playlist_get_play_mode()) {
 				case PM_CONTINUE:
-					notice_msg = "PLAYMODE: CONTINUE";
+					notice_msg = "播放模式: 连续";
 					break;
 				case PM_RANDOM:
-					notice_msg = "PLAYMODE: RANDOM";
+					notice_msg = "播放模式: 随机";
 					break;
 				case PM_RANDOM_REPEAT:
-					notice_msg = "PLAYMODE: RANDOM+REPEAT";
+					notice_msg = "播放模式: 随机+循环";
 					break;
 				case PM_REPEAT_1:
-					notice_msg = "PLAYMODE: REPEAT TRACK";
+					notice_msg = "播放模式: 单曲循环 ";
 					break;
 				case PM_REPEAT_ALL:
-					notice_msg = "PLAYMODE: REPEAT ALL";
+					notice_msg = "播放模式: 循环 所有";
 					break;
 			}
 			if (notice_msg)

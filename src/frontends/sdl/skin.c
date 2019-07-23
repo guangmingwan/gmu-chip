@@ -326,12 +326,16 @@ static void skin_update_widget(Skin *skin, GmuWidget *gw, SDL_Surface *display, 
 	drect.x = srect.x;
 	drect.y = srect.y;
 	SDL_BlitSurface(buffer, &srect, display, &drect);
+	SDL_SoftStretch(display, NULL, ScreenSurface, NULL);
+	SDL_UpdateRects(ScreenSurface, 1, &drect);
+	return;
+	
 	if(strstr(code, "unknown")) {
 		SDL_UpdateRects(display, 1, &drect);
 		SDL_SoftStretch(display, NULL, ScreenSurface, NULL);
 	}
 	else {
-		if(SDL_MUSTLOCK(ScreenSurface)) SDL_LockSurface(ScreenSurface);
+		//if(SDL_MUSTLOCK(ScreenSurface)) SDL_LockSurface(ScreenSurface);
 		int x, y;
 		uint32_t *s = (uint32_t*)display->pixels;
 		uint32_t *d = (uint32_t*)ScreenSurface->pixels;
@@ -341,8 +345,9 @@ static void skin_update_widget(Skin *skin, GmuWidget *gw, SDL_Surface *display, 
 			}
 			d+= 160;
 		}
-		if(SDL_MUSTLOCK(ScreenSurface)) SDL_UnlockSurface(ScreenSurface);
-		SDL_Flip(ScreenSurface);
+		//if(SDL_MUSTLOCK(ScreenSurface)) SDL_UnlockSurface(ScreenSurface);
+		//SDL_Flip(ScreenSurface);
+		SDL_UpdateRects(ScreenSurface, 1, &drect);
 	}
 }
 
@@ -388,14 +393,18 @@ void skin_draw_footer_bg(Skin *skin, SDL_Surface *buffer)
 
 void skin_update_bg(Skin *skin, SDL_Surface *display, SDL_Surface *buffer)
 {
-	SDL_BlitSurface(buffer, NULL, display, NULL);
 	
+	//SDL_BlitSurface(buffer, NULL, ScreenSurface, NULL);
+	//SDL_UpdateRect(ScreenSurface, 0, 0, 0, 0);
+	//SDL_SoftStretch(buffer, NULL, ScreenSurface, NULL);
+	//SDL_Flip(ScreenSurface);
+	return;
 	if(strstr(code, "unknown")) {
 		SDL_UpdateRect(display, 0, 0, 0, 0);
   		SDL_SoftStretch(display, NULL, ScreenSurface, NULL);
 	}
 	else {
-		if(SDL_MUSTLOCK(ScreenSurface)) SDL_LockSurface(ScreenSurface);
+		//if(SDL_MUSTLOCK(ScreenSurface)) SDL_LockSurface(ScreenSurface);
 		int x, y;
 		uint32_t *s = (uint32_t*)display->pixels;
 		uint32_t *d = (uint32_t*)ScreenSurface->pixels;
@@ -405,8 +414,9 @@ void skin_update_bg(Skin *skin, SDL_Surface *display, SDL_Surface *buffer)
 			}
 			d+= 160;
 		}
-		if(SDL_MUSTLOCK(ScreenSurface)) SDL_UnlockSurface(ScreenSurface);
-		SDL_Flip(ScreenSurface);
+		//if(SDL_MUSTLOCK(ScreenSurface)) SDL_UnlockSurface(ScreenSurface);
+		SDL_UpdateRect(ScreenSurface, 0, 0, 0, 0);
+		//SDL_Flip(ScreenSurface);
 	}
 }
 

@@ -17,15 +17,15 @@
 #ifndef _HW_UNKNOWN_H
 #define _HW_UNKNOWN_H
 
-#define HW_COLOR_DEPTH 32
-#define HW_SCREEN_WIDTH 480
-#define HW_SCREEN_HEIGHT 360
+#define HW_COLOR_DEPTH 16
+#define HW_SCREEN_WIDTH 320
+#define HW_SCREEN_HEIGHT 240
 
 #define SAMPLE_BUFFER_SIZE 4096
 
 #define MAX_COVER_IMAGE_PIXELS 400000
 
-#define SHOW_MOUSE_CURSOR 1
+#define SHOW_MOUSE_CURSOR 0
 
 int           hw_open_mixer(int mixer_channel);
 void          hw_close_mixer(void);
