@@ -1079,9 +1079,6 @@ static void run_player(char *skin_name, char *decoders_str)
 			last = joy_axis_dir;
 			break;
 		}
-		case SDL_JOYHATMOTION:
-			wdprintf(V_DEBUG, "sdl_frontend", "Joy Hat motion\n");
-			break;
 		case SDL_QUIT:
 			gmu_core_quit();
 			break;
