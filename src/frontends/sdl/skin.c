@@ -326,7 +326,7 @@ static void skin_update_widget(Skin *skin, GmuWidget *gw, SDL_Surface *display, 
 	drect.x = srect.x;
 	drect.y = srect.y;
 	SDL_BlitSurface(buffer, &srect, display, &drect);
-	if(strstr(code, "unknown")) {
+	if(strstr(code, "rc")) {
 		SDL_UpdateRects(display, 1, &drect);
 		SDL_SoftStretch(display, NULL, ScreenSurface, NULL);
 	}
@@ -390,7 +390,7 @@ void skin_update_bg(Skin *skin, SDL_Surface *display, SDL_Surface *buffer)
 {
 	SDL_BlitSurface(buffer, NULL, display, NULL);
 	
-	if(strstr(code, "unknown")) {
+	if(strstr(code, "rc")) {
 		SDL_UpdateRect(display, 0, 0, 0, 0);
   		SDL_SoftStretch(display, NULL, ScreenSurface, NULL);
 	}

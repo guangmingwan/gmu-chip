@@ -25,7 +25,7 @@ int hw_open_mixer(int mixer_channel)
 {
 	// int res = oss_mixer_open();
 	// selected_mixer = mixer_channel;
-	// wdprintf(V_INFO, "hw_dingux", "Selected mixer: %d\n", selected_mixer);
+	// wdprintf(V_INFO, "hw_rc", "Selected mixer: %d\n", selected_mixer);
 	// return res;
 }
 
@@ -39,7 +39,7 @@ void hw_set_volume(int volume)
 	// if (selected_mixer >= 0) {
 	// 	if (volume >= 0) oss_mixer_set_volume(selected_mixer, volume);
 	// } else {
-	// 	wdprintf(V_INFO, "hw_dingux", "No suitable mixer available.\n");
+	// 	wdprintf(V_INFO, "hw_rc", "No suitable mixer available.\n");
 	// }
 }
 
@@ -49,7 +49,7 @@ void hw_display_off(void)
 	FILE *f;
 	int   display_on_value_tmp = 0;
 
-	wdprintf(V_DEBUG, "hw_dingux", "Display off requested.\n");
+	wdprintf(V_DEBUG, "hw_rc", "Display off requested.\n");
 	if ((f = fopen("/proc/jz/lcd_backlight", "r"))) { /* Old kernel */
 		if (fgets(tmp, 4, f)) display_on_value_tmp = atoi(tmp);
 		fclose(f);
@@ -74,7 +74,7 @@ void hw_display_on(void)
 {
 	FILE *f;
 
-	wdprintf(V_DEBUG, "hw_dingux", "Display on requested.\n");
+	wdprintf(V_DEBUG, "hw_rc", "Display on requested.\n");
 	if (display_on_value > 0) { /* Old kernel */
 		if ((f = fopen("/proc/jz/lcd_backlight", "w"))) {
 			fprintf(f, "%d\n", display_on_value);
@@ -97,9 +97,9 @@ void hw_detect_device_model(void)
 
 const char *hw_get_device_model_name(void)
 {
-	return "Dingoo A320";
+	return "Retro Carnival";
 }
 const char *hw_get_device_model_code(void)
 {
-	return "dingux";
+	return "rc";
 }

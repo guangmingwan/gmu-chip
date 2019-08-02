@@ -167,12 +167,12 @@ static SDL_Surface *init_sdl(int with_joystick, int width, int height, int fulls
 		
 		
 
-	ScreenSurface = SDL_SetVideoMode(width, 480, screen_max_depth,
+	ScreenSurface = SDL_SetVideoMode(width, height, screen_max_depth,
 	#ifndef SDLFE_NO_HWACCEL
 									SDL_HWSURFACE | SDL_HWACCEL |
 	#endif
 									SDL_RESIZABLE | fullscreen);
-	if(strstr(code, "unknown")) {
+	if(strstr(code, "rc")) {
 		wdprintf(V_WARNING, "sdl_frontend", "SDL_SetVideoMode(%d,%d,%d).\n",width,height,screen_max_depth);
 		display = SDL_SetVideoMode(width, height, screen_max_depth,
 		#ifndef SDLFE_NO_HWACCEL
