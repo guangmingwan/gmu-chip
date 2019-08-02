@@ -823,10 +823,48 @@ wdprintf(V_DEBUG, "run_player", "%s ,%s\n", skin_name, decoders_str);
 			}
 			case SDL_KEYUP:
 			case SDL_JOYBUTTONUP:
+			case SDL_JOYHATMOTION:
+				
 				switch (event.type) {
 					case SDL_KEYUP:       button = event.key.keysym.sym; break;
 					case SDL_JOYBUTTONUP: button = event.jbutton.button; break;
 					default: break;
+					case SDL_JOYHATMOTION:
+					if (event.jhat.value == 0)
+                        {
+                                button = -1;
+                        }
+                        if (event.jhat.value & SDL_HAT_UP)
+                        {
+                                /* Do up stuff here */
+                                button = SDLK_UP;
+                        }
+
+                        else if (event.jhat.value & SDL_HAT_LEFT)
+                        {
+                                /* Do left stuff here */
+                                button = SDLK_LEFT;
+                        }
+
+                        else if (event.jhat.value & SDL_HAT_RIGHT)
+                        {
+                                /* Do right and down together stuff here */
+                                button = SDLK_RIGHT;
+                        }
+                        else if (event.jhat.value & SDL_HAT_DOWN)
+                        {
+                                /* Do right and down together stuff here */
+                                button = SDLK_DOWN;
+                        }
+                        else if (event.jhat.value & SDL_HAT_CENTERED)
+                        {
+                                button = -1;
+                        }
+
+
+
+
+					break;
 				}
 
 				if (modifier && key_action_mapping_get_action(kam, button, 0, view, ACTIVATE_PRESS) == MODIFIER) {
