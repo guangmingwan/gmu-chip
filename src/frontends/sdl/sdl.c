@@ -182,7 +182,7 @@ static SDL_Surface *init_sdl(int with_joystick, int width, int height, int fulls
 	}	
 	else {
 		
-    	display = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 240, 16, 0, 0, 0, 0);
+    	display = SDL_CreateRGBSurface(SDL_SWSURFACE, width,height, 16, 0, 0, 0, 0);
 		SDL_ShowCursor(0);
 	}
     
