@@ -1,0 +1,2 @@
+HAS_OSS=0
+TOOLS_TO_BUILD="" TARGET=rc make
