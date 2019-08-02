@@ -1005,37 +1005,32 @@ static void run_player(char *skin_name, char *decoders_str)
 				button = event.jbutton.button;
 				break;
 			case SDL_JOYHATMOTION:
-				if (event.jhat.value == 0)
-				{
-					button = -1;
-				}
 				if (event.jhat.value & SDL_HAT_UP)
 				{
 					/* Do up stuff here */
-					button = SDLK_UP;
+					button = 14;
+					button_repeat_timer = 5;
 				}
 
 				else if (event.jhat.value & SDL_HAT_LEFT)
 				{
 					/* Do left stuff here */
-					button = SDLK_LEFT;
+					button = 11;
+					button_repeat_timer = 5;
 				}
 
 				else if (event.jhat.value & SDL_HAT_RIGHT)
 				{
 					/* Do right and down together stuff here */
-					button = SDLK_RIGHT;
+					button = 12;
+					button_repeat_timer = 5;
 				}
 				else if (event.jhat.value & SDL_HAT_DOWN)
 				{
 					/* Do right and down together stuff here */
-					button = SDLK_DOWN;
+					button = 13;
+					button_repeat_timer = 5;
 				}
-				else if (event.jhat.value & SDL_HAT_CENTERED)
-				{
-					button = -1;
-				}
-
 				break;
 			default:
 				break;
@@ -1112,7 +1107,7 @@ static void run_player(char *skin_name, char *decoders_str)
 
 		if (event.type == SDL_KEYDOWN || event.type == SDL_JOYBUTTONDOWN ||
 			event.type == SDL_KEYUP || event.type == SDL_JOYBUTTONUP ||
-			event.type == SDL_JOYAXISMOTION ||
+			event.type == SDL_JOYAXISMOTION || event.type == SDL_JOYHATMOTION ||
 			(button_repeat_timer == 0 && user_key_action > 0))
 		{
 			ActivateMethod amethod = ACTIVATE_PRESS;
@@ -1128,6 +1123,38 @@ static void run_player(char *skin_name, char *decoders_str)
 				amethod = ACTIVATE_RELEASE;
 			case SDL_JOYBUTTONDOWN:
 				button = event.jbutton.button;
+				break;
+			case SDL_JOYHATMOTION:
+				
+                                if (event.jhat.value & SDL_HAT_UP)
+                                {       
+                                        /* Do up stuff here */ 
+                                        button = 14;
+					button_repeat_timer = 5;
+                                }       
+
+                                else if (event.jhat.value & SDL_HAT_LEFT)
+                                {       
+                                        /* Do left stuff here */ 
+                                        button = 11;
+					button_repeat_timer = 5;
+                                }       
+
+                                else if (event.jhat.value & SDL_HAT_RIGHT)
+                                {       
+                                        /* Do right and down together stuff here */ 
+                                        button = 12;
+					button_repeat_timer = 5;
+                                }       
+                                else if (event.jhat.value & SDL_HAT_DOWN)
+                                {       
+                                        /* Do right and down together stuff here */ 
+                                        button = 13;
+					button_repeat_timer = 5;
+                                }       
+				else {
+					amethod = ACTIVATE_RELEASE;
+				}
 				break;
 			case SDL_JOYAXISMOTION:
 			{
@@ -1154,10 +1181,10 @@ static void run_player(char *skin_name, char *decoders_str)
 				break;
 			}
 
-			/*printf("sdl_frontend: button=%d char=%c method=%d brt=%d\n", 
+			printf("sdl_frontend: button=%d char=%c method=%d brt=%d\n", 
 			       button, event.key.keysym.unicode <= 127 && 
 			               event.key.keysym.unicode >= 32 ? event.key.keysym.unicode : '?',
-			               amethod, button_repeat_timer);*/
+			               amethod, button_repeat_timer);
 
 			/* Reinitialize random seed each time a button is pressed: */
 			srand(time(NULL));
@@ -1175,6 +1202,7 @@ static void run_player(char *skin_name, char *decoders_str)
 			if (button_repeat_timer != 0)
 			{
 				user_key_action = key_action_mapping_get_action(kam, button, modifier, view, amethod);
+				 printf("sdl_frontend: user_key_action=%d\n", user_key_action);
 			}
 			if (button_repeat_timer == 0)
 			{

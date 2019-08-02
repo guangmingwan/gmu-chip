@@ -5,8 +5,8 @@
 # FileBrowserAddFileToPlaylistOrChDir
 Modifier=Select
 # Global mappings:
-#Left=Left
-#Right=Right
+Left=Left
+Right=Right
 Up=Up
 Down=Down
 ShutdownTimer=Mod+Down
