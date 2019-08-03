@@ -224,7 +224,15 @@ static SDL_Surface *init_sdl(int with_joystick, int width, int height, int fulls
 		if (with_joystick)
 		{
 			wdprintf(V_DEBUG, "sdl_frontend", "Opening joystick device.\n");
-			SDL_JoystickOpen(0);
+			if (SDL_NumJoysticks() > 0)
+			{
+				int i;
+				for (i = 0; i < SDL_NumJoysticks(); i++)
+				{
+					SDL_JoystickOpen(i);
+				}
+				SDL_JoystickEventState(SDL_ENABLE);
+			}
 		}
 		SDL_WM_SetCaption("Gmu Music Player", NULL);
 		SDL_EnableUNICODE(1);
@@ -1005,31 +1013,38 @@ static void run_player(char *skin_name, char *decoders_str)
 				button = event.jbutton.button;
 				break;
 			case SDL_JOYHATMOTION:
-				if (event.jhat.value & SDL_HAT_UP)
+				switch (evet.jhat.value)
 				{
+				case SDL_HAT_UP:
+				case SDL_HAT_RIGHTUP:
+
 					/* Do up stuff here */
 					button = 14;
 					button_repeat_timer = 5;
-				}
 
-				else if (event.jhat.value & SDL_HAT_LEFT)
-				{
+					break;
+
+				case SDL_HAT_LEFT:
+				case SDL_HAT_LEFTUP:
+
 					/* Do left stuff here */
 					button = 11;
 					button_repeat_timer = 5;
-				}
+					break;
 
-				else if (event.jhat.value & SDL_HAT_RIGHT)
-				{
+				case SDL_HAT_RIGHT:
+				case SDL_HAT_RIGHTDOWN:
 					/* Do right and down together stuff here */
 					button = 12;
 					button_repeat_timer = 5;
-				}
-				else if (event.jhat.value & SDL_HAT_DOWN)
-				{
+					break;
+				case SDL_HAT_DOWN:
+				case SDL_HAT_LEFTDOWN:
 					/* Do right and down together stuff here */
 					button = 13;
 					button_repeat_timer = 5;
+
+					break;
 				}
 				break;
 			default:
@@ -1125,35 +1140,42 @@ static void run_player(char *skin_name, char *decoders_str)
 				button = event.jbutton.button;
 				break;
 			case SDL_JOYHATMOTION:
-				
-                                if (event.jhat.value & SDL_HAT_UP)
-                                {       
-                                        /* Do up stuff here */ 
-                                        button = 14;
-					button_repeat_timer = 5;
-                                }       
 
-                                else if (event.jhat.value & SDL_HAT_LEFT)
-                                {       
-                                        /* Do left stuff here */ 
-                                        button = 11;
-					button_repeat_timer = 5;
-                                }       
+				switch (evet.jhat.value)
+				{
+				case SDL_HAT_UP:
+				case SDL_HAT_RIGHTUP:
 
-                                else if (event.jhat.value & SDL_HAT_RIGHT)
-                                {       
-                                        /* Do right and down together stuff here */ 
-                                        button = 12;
+					/* Do up stuff here */
+					button = 14;
 					button_repeat_timer = 5;
-                                }       
-                                else if (event.jhat.value & SDL_HAT_DOWN)
-                                {       
-                                        /* Do right and down together stuff here */ 
-                                        button = 13;
+
+					break;
+
+				case SDL_HAT_LEFT:
+				case SDL_HAT_LEFTUP:
+
+					/* Do left stuff here */
+					button = 11;
 					button_repeat_timer = 5;
-                                }       
-				else {
+					break;
+
+				case SDL_HAT_RIGHT:
+				case SDL_HAT_RIGHTDOWN:
+					/* Do right and down together stuff here */
+					button = 12;
+					button_repeat_timer = 5;
+					break;
+				case SDL_HAT_DOWN:
+				case SDL_HAT_LEFTDOWN:
+					/* Do right and down together stuff here */
+					button = 13;
+					button_repeat_timer = 5;
+
+					break;
+				case default:
 					amethod = ACTIVATE_RELEASE;
+					break;
 				}
 				break;
 			case SDL_JOYAXISMOTION:
@@ -1181,10 +1203,9 @@ static void run_player(char *skin_name, char *decoders_str)
 				break;
 			}
 
-			printf("sdl_frontend: button=%d char=%c method=%d brt=%d\n", 
-			       button, event.key.keysym.unicode <= 127 && 
-			               event.key.keysym.unicode >= 32 ? event.key.keysym.unicode : '?',
-			               amethod, button_repeat_timer);
+			printf("sdl_frontend: button=%d char=%c method=%d brt=%d\n",
+				   button, event.key.keysym.unicode <= 127 && event.key.keysym.unicode >= 32 ? event.key.keysym.unicode : '?',
+				   amethod, button_repeat_timer);
 
 			/* Reinitialize random seed each time a button is pressed: */
 			srand(time(NULL));
@@ -1202,7 +1223,7 @@ static void run_player(char *skin_name, char *decoders_str)
 			if (button_repeat_timer != 0)
 			{
 				user_key_action = key_action_mapping_get_action(kam, button, modifier, view, amethod);
-				 printf("sdl_frontend: user_key_action=%d\n", user_key_action);
+				printf("sdl_frontend: user_key_action=%d\n", user_key_action);
 			}
 			if (button_repeat_timer == 0)
 			{
