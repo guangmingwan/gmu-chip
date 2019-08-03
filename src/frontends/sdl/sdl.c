@@ -1173,7 +1173,7 @@ static void run_player(char *skin_name, char *decoders_str)
 					button_repeat_timer = 5;
 
 					break;
-				case default:
+				default:
 					amethod = ACTIVATE_RELEASE;
 					break;
 				}
