@@ -304,16 +304,16 @@ static int file_browser_process_action(FileBrowser *fb, PlaylistBrowser *pb,
 		{
 			char *sf = file_browser_get_selected_file_full_path_alloc(fb);
 			if (sf && gmu_core_playlist_add_dir(sf))
-				player_display_set_notice_message("ADDING DIRECTORY...", NOTICE_DELAY);
+				player_display_set_notice_message("正在添加目录...", NOTICE_DELAY);
 			else
-				player_display_set_notice_message("ALREADY ADDING A DIRECTORY", NOTICE_DELAY);
+				player_display_set_notice_message("已经在添加中", NOTICE_DELAY);
 			update = UPDATE_ALL;
 			if (sf)
 				free(sf);
 		}
 		else
 		{
-			player_display_set_notice_message("NOT A DIRECTORY", NOTICE_DELAY);
+			player_display_set_notice_message("不是一个目录", NOTICE_DELAY);
 		}
 		break;
 	case FB_NEW_PL_FROM_DIR:
@@ -321,16 +321,16 @@ static int file_browser_process_action(FileBrowser *fb, PlaylistBrowser *pb,
 		{
 			char *sf = file_browser_get_selected_file_full_path_alloc(fb);
 			pl_browser_playlist_clear(pb);
-			player_display_set_notice_message("CREATING NEW PLAYLIST...", NOTICE_DELAY);
+			player_display_set_notice_message("创建新的播放清单...", NOTICE_DELAY);
 			if (sf && gmu_core_playlist_add_dir(sf))
-				player_display_set_notice_message("DIRECTORY ADDED", NOTICE_DELAY);
+				player_display_set_notice_message("目录添加成功。", NOTICE_DELAY);
 			update = UPDATE_ALL;
 			if (sf)
 				free(sf);
 		}
 		else
 		{
-			player_display_set_notice_message("NOT A DIRECTORY", NOTICE_DELAY);
+			player_display_set_notice_message("不是一个目录", NOTICE_DELAY);
 		}
 		break;
 	case FB_DIR_UP:
@@ -379,12 +379,12 @@ static int file_browser_process_action(FileBrowser *fb, PlaylistBrowser *pb,
 						}
 						gmu_core_playlist_insert_file_after(sel_entry, path);
 						pl_brower_move_selection_down(pb);
-						player_display_set_notice_message("ITEM INSERTED IN PLAYLIST", NOTICE_DELAY);
+						player_display_set_notice_message("成功插入对象到播放清单", NOTICE_DELAY);
 					}
 					else
 					{ /* add item */
 						gmu_core_playlist_add_file(path);
-						player_display_set_notice_message("ITEM ADDED TO PLAYLIST", NOTICE_DELAY);
+						player_display_set_notice_message("成功插入对象到播放清单", NOTICE_DELAY);
 					}
 					free(path);
 				}
@@ -454,11 +454,11 @@ static void pb_delete_func(void *arg)
 			}
 		}
 		f = gmu_core_playlist_get_entry_filename(entry);
-		wdprintf(V_DEBUG, "sdl_frontend", "Delete file %s.\n", f);
+		wdprintf(V_DEBUG, "sdl_frontend", "删除文件吗 %s.\n", f);
 		if (remove(f) == 0)
-			player_display_set_notice_message("FILE DELETED!", NOTICE_DELAY);
+			player_display_set_notice_message("文件删除成功!", NOTICE_DELAY);
 		else
-			player_display_set_notice_message("COULD NOT DELETE FILE!", NOTICE_DELAY);
+			player_display_set_notice_message("不能删除文件!", NOTICE_DELAY);
 		pl_browser_playlist_remove_selection(p->pb);
 	}
 }
@@ -485,7 +485,7 @@ static int playlist_browser_process_action(PlaylistBrowser *pb, TrackInfo *ti,
 		break;
 	case PL_CLEAR_PLAYLIST:
 		pl_browser_playlist_clear(pb);
-		player_display_set_notice_message("PLAYLIST CLEARED", NOTICE_DELAY);
+		player_display_set_notice_message("播放列表清空成功", NOTICE_DELAY);
 		update = UPDATE_ALL;
 		break;
 	case PL_REMOVE_ITEM:
@@ -1327,7 +1327,7 @@ static void run_player(char *skin_name, char *decoders_str)
 					}
 					else
 					{
-						player_display_set_notice_message("CANNOT JUMP TO NEXT TRACK", NOTICE_DELAY);
+						player_display_set_notice_message("不能跳到下个音轨", NOTICE_DELAY);
 					}
 					update = UPDATE_ALL;
 					break;
@@ -1339,7 +1339,7 @@ static void run_player(char *skin_name, char *decoders_str)
 					}
 					else
 					{
-						player_display_set_notice_message("CANNOT JUMP TO PREV TRACK", NOTICE_DELAY);
+						player_display_set_notice_message("不能跳到上一个音轨", NOTICE_DELAY);
 					}
 					update = UPDATE_ALL;
 					break;
@@ -1407,27 +1407,27 @@ static void run_player(char *skin_name, char *decoders_str)
 					default:
 					case 0: /* Timer disabled */
 						gmu_core_set_shutdown_time(15);
-						timer_msg = "SHUT DOWN IN 15 MINUTES";
+						timer_msg = "15分钟后关闭";
 						break;
 					case 15: /* 15 minutes */
 						gmu_core_set_shutdown_time(30);
-						timer_msg = "SHUT DOWN IN 30 MINUTES";
+						timer_msg = "30分钟后关闭";
 						break;
 					case 30:
 						gmu_core_set_shutdown_time(60);
-						timer_msg = "SHUT DOWN IN 60 MINUTES";
+						timer_msg = "60分钟后关闭";
 						break;
 					case 60:
 						gmu_core_set_shutdown_time(90);
-						timer_msg = "SHUT DOWN IN 90 MINUTES";
+						timer_msg = "90分钟后关闭";
 						break;
 					case 90:
 						gmu_core_set_shutdown_time(-1);
-						timer_msg = "SHUT DOWN AFTER LAST TRACK";
+						timer_msg = "播完下首音乐关闭";
 						break;
 					case -1: /* Shutdown after last track */
 						gmu_core_set_shutdown_time(0);
-						timer_msg = "SHUT DOWN TIMER DISABLED";
+						timer_msg = "定时关闭被禁用";
 						break;
 					}
 					player_display_set_notice_message(timer_msg, NOTICE_DELAY);
@@ -1469,15 +1469,15 @@ static void run_player(char *skin_name, char *decoders_str)
 					case PLMANAGER_SAVE_LIST:
 						plmanager_reset_flag(&ps);
 						snprintf(temp, 255, "%s/%s", base_dir, plmanager_get_selection(&ps));
-						wdprintf(V_INFO, "sdl_frontend", "Playlist file: %s\n", temp);
+						wdprintf(V_INFO, "sdl_frontend", "清单文件: %s\n", temp);
 						strtoupper(buf42, plmanager_get_selection(&ps), 63);
 						if (gmu_core_export_playlist(temp))
 						{
-							snprintf(buf23, 63, "SAVED AS %s\n", buf42);
+							snprintf(buf23, 63, "另存为 %s\n", buf42);
 						}
 						else
 						{
-							snprintf(buf23, 63, "FAILED SAVING %s\n", buf42);
+							snprintf(buf23, 63, "保存失败 %s\n", buf42);
 						}
 						player_display_set_notice_message(buf23, NOTICE_DELAY);
 						break;
@@ -1487,7 +1487,7 @@ static void run_player(char *skin_name, char *decoders_str)
 						plmanager_reset_flag(&ps);
 						snprintf(temp, 255, "%s/%s", base_dir, plmanager_get_selection(&ps));
 						gmu_core_add_m3u_contents_to_playlist(temp);
-						player_display_set_notice_message("M3U ADDED TO PLAYLIST", NOTICE_DELAY);
+						player_display_set_notice_message("M3U 加到播放清单", NOTICE_DELAY);
 						break;
 					default:
 						break;
@@ -1831,12 +1831,12 @@ static int event_callback(GmuEvent event, int param)
 	case GMU_VOLUME_CHANGE:
 	{
 		char volnotice[20];
-		snprintf(volnotice, 19, "VOLUME: %d/%d", gmu_core_get_volume(), gmu_core_get_volume_max());
+		snprintf(volnotice, 19, "音量: %d/%d", gmu_core_get_volume(), gmu_core_get_volume_max());
 		player_display_set_notice_message(volnotice, NOTICE_DELAY);
 		break;
 	}
 	case GMU_BUFFERING:
-		player_display_set_notice_message("BUFFERING...", NOTICE_DELAY);
+		player_display_set_notice_message("缓冲中...", NOTICE_DELAY);
 		player_display_set_playback_symbol_blinking(1);
 		break;
 	case GMU_BUFFERING_DONE:
@@ -1849,19 +1849,19 @@ static int event_callback(GmuEvent event, int param)
 		switch (gmu_core_playlist_get_play_mode())
 		{
 		case PM_CONTINUE:
-			notice_msg = "PLAYMODE: CONTINUE";
+			notice_msg = "播放模式: 顺序";
 			break;
 		case PM_RANDOM:
-			notice_msg = "PLAYMODE: RANDOM";
+			notice_msg = "播放模式: 随机";
 			break;
 		case PM_RANDOM_REPEAT:
-			notice_msg = "PLAYMODE: RANDOM+REPEAT";
+			notice_msg = "播放模式: 随机+循环";
 			break;
 		case PM_REPEAT_1:
-			notice_msg = "PLAYMODE: REPEAT TRACK";
+			notice_msg = "播放模式: 单曲循环";
 			break;
 		case PM_REPEAT_ALL:
-			notice_msg = "PLAYMODE: REPEAT ALL";
+			notice_msg = "播放模式: 清单循环";
 			break;
 		}
 		if (notice_msg)
