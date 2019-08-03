@@ -68,7 +68,7 @@ static CoverViewer cv;
 static Question dlg;
 static SDL_TimerID tid;
 SDL_Surface *ScreenSurface = NULL;
-
+SDL_Joystick     *g_pJoy = NULL;
 typedef enum Update
 {
 	UPDATE_NONE = 0,
@@ -229,7 +229,7 @@ static SDL_Surface *init_sdl(int with_joystick, int width, int height, int fulls
 				int i;
 				for (i = 0; i < SDL_NumJoysticks(); i++)
 				{
-					SDL_JoystickOpen(i);
+					g_pJoy = SDL_JoystickOpen(i);
 				}
 				SDL_JoystickEventState(SDL_ENABLE);
 			}
@@ -1784,6 +1784,13 @@ static void shut_down(void)
 		wdprintf(V_ERROR, "sdl_frontend", "ERROR stopping thread.\n");
 	wdprintf(V_DEBUG, "sdl_frontend", "Closing SDL video subsystem...\n");
 	SDL_QuitSubSystem(SDL_INIT_VIDEO);
+
+	if (g_pJoy != NULL)
+	{
+		SDL_JoystickClose(g_pJoy);
+		g_pJoy = NULL;
+	}
+
 	if (gmu_icon)
 		SDL_FreeSurface(gmu_icon);
 	wdprintf(V_INFO, "sdl_frontend", "All done.\n");
