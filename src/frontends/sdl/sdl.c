@@ -1013,7 +1013,7 @@ static void run_player(char *skin_name, char *decoders_str)
 				button = event.jbutton.button;
 				break;
 			case SDL_JOYHATMOTION:
-				switch (evet.jhat.value)
+				switch (event.jhat.value)
 				{
 				case SDL_HAT_UP:
 				case SDL_HAT_RIGHTUP:
@@ -1141,7 +1141,7 @@ static void run_player(char *skin_name, char *decoders_str)
 				break;
 			case SDL_JOYHATMOTION:
 
-				switch (evet.jhat.value)
+				switch (event.jhat.value)
 				{
 				case SDL_HAT_UP:
 				case SDL_HAT_RIGHTUP:
